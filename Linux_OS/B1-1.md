@@ -10,6 +10,33 @@
 ### 미션 목적
  * "지속적으로 살아 움직이는 Runtime System" 구현
 
+### 디렉토리 형태
+```bash
+/home/agent-admin/agent-app/                # AGENT_HOME (애플리케이션 루트)
+├── bin/                                    # 실행 및 운영 스크립트 디렉토리
+│   ├── monitor.sh                          # 시스템 관제 자동화 스크립트
+│   └── stats.dat                           # CPU/MEM 통계 누적 데이터
+│
+├── api_keys/                               # 민감 정보 저장 디렉토리
+│   └── t_secret.key                        # 애플리케이션 인증용 API Key
+│
+├── upload_files/                           # 사용자 업로드 및 협업 공유 디렉토리
+│   └── (uploaded files...)                 # 업로드 파일 저장 위치
+│
+├── agent_app.py                            # 메인 애플리케이션 프로세스
+│
+├── .env                                    # 환경 변수 설정 파일 (선택 사용)
+│
+└── logs/                                   # 애플리케이션 내부 로그 디렉토리 (선택)
+    └── app.log                             # 앱 실행 로그
+
+/var/log/agent-app/                         # 시스템 운영 로그 디렉토리
+├── monitor.log                             # 현재 활성 모니터링 로그
+├── monitor.log.1                           # Rotation된 이전 로그
+├── monitor.log.2                           # 이전 세대 로그
+├── ...
+└── monitor.log.10                          # 가장 오래된 보관 로그
+```
 ---
 
 # 1. 기본 보안 및 네트워크 설정
