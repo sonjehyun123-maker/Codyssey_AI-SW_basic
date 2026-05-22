@@ -368,9 +368,9 @@ if [ -z "$UFW_CHECK" ]; then
 fi
 
 # 자원 수집
-CPU=$(top -bn1 | awk '/Cpu/ {print 100 - $8}')
-MEM=$(free | grep Mem | awk '{print $3/$2 * 100.0}')
-DISK=$(df / | tail -1 | awk '{print $5}' | sed 's/%//')
+CPU=$(top -bn1 | awk '/Cpu/ {print 100 - $8}')          # 사용률 = 100 - idle
+MEM=$(free | grep Mem | awk '{print $3/$2 * 100.0}')    # 사용 메모리 / 전체 메모리 * 100
+DISK=$(df / | tail -1 | awk '{print $5}' | sed 's/%//') # df에서 디스크 사용량을 %빼고 추출
 
 echo -e "\n[RESOURCE MONITORING]"
 printf "CPU Usage : %.1f%%\n" "$CPU"
