@@ -393,7 +393,7 @@ LOG_LINE="[$TIMESTAMP] PID:$PID CPU:$(printf "%.1f" $CPU)% MEM:$(printf "%.1f" $
 echo "$LOG_LINE" >> "$LOG_FILE"
 
 # 로그 로테이션
-MAX_SIZE=10485760
+MAX_SIZE=$((10 * 1024 * 1024))
 
 if [ $(stat -c%s "$LOG_FILE") -gt $MAX_SIZE ]; then
     for i in {9..1}; do
