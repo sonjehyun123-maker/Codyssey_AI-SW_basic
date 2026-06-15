@@ -14,21 +14,14 @@ const githubModule = {
 
         try {
             const response = await fetch(`https://api.github.com/users/${this.githubId}/repos?sort=updated`);
-            if (!response.ok) throw new Error(`에러 발생 (코드: ${response.status})`);
+            if (!response.ok) throw new Error(`API 로드 실패`);
 
             this.allProjects = await response.json();
             this.render(this.allProjects);
 
         } catch (error) {
             console.error(error);
-            container.innerHTML = `
-                <div style="text-align:center; width:100%;">
-                    <p style="color: #ef4444;">프로젝트를 불러올 수 없습니다. (API 한도 초과 또는 네트워크 오류)</p>
-                    <button id="retry-btn" class="btn" style="margin-top:10px; border:none; cursor:pointer;">다시 시도</button>
-                </div>
-            `;
-            const retryBtn = document.getElementById("retry-btn");
-            if (retryBtn) retryBtn.addEventListener("click", () => this.fetchRepos());
+            container.innerHTML = `<p style="text-align:center; width:100%; color:#ef4444;">GitHub 프로젝트를 동적으로 가져오지 못했습니다.</p>`;
         }
     },
 
@@ -37,18 +30,23 @@ const githubModule = {
         if (!container) return;
 
         if (projectsList.length === 0) {
-            container.innerHTML = `<p style="text-align:center; width:100%;">표시할 저장소가 없습니다.</p>`;
+            container.innerHTML = `<p style="text-align:center; width:100%;">보유 중인 프로젝트 저장소가 없습니다.</p>`;
             return;
         }
 
         container.innerHTML = projectsList.map(({ name, description, html_url, language, stargazers_count }) => `
             <article class="project-card">
-                <h3>${name}</h3>
-                <p>${description || "설명이 없는 프로젝트입니다."}</p>
-                <div style="margin-top: 10px; font-size: 14px; opacity: 0.8;">
-                    <span>🛠️ ${language || "Etc"}</span> | <span>⭐ ${stargazers_count}</span>
+                <div>
+                    <h3 style="color: var(--primary-color); margin-bottom: 10px; font-size: 18px; font-weight: bold;">${name}</h3>
+                    <p style="font-size: 14px; opacity: 0.8; margin-bottom: 15px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; min-height: 66px;">
+                        ${description || "설명이 없는 프로젝트입니다."}
+                    </p>
+                    <div style="font-size: 13px; opacity: 0.6; display: flex; gap: 12px; margin-bottom: 20px;">
+                        <span>🛠️ ${language || "Etc"}</span>
+                        <span>⭐ ${stargazers_count}</span>
+                    </div>
                 </div>
-                <a href="${html_url}" target="_blank" rel="noopener noreferrer" class="btn" style="display:inline-block; margin-top:15px; font-size:14px; padding:5px 10px;">
+                <a href="${html_url}" target="_blank" rel="noopener noreferrer" class="btn" style="margin-top: 0; font-size: 13px; padding: 6px 12px; text-align: center; width: fit-content;">
                     GitHub 보기
                 </a>
             </article>

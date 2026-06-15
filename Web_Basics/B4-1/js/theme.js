@@ -1,15 +1,10 @@
 const themeModule = {
-    currentTheme: localStorage.getItem("theme") || "light",
+    currentTheme: localStorage.getItem("theme") || "dark",
 
     init() {
         const themeToggle = document.getElementById("theme-toggle");
         if (!themeToggle) return;
-
-        if (!localStorage.getItem("theme")) {
-            const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-            this.currentTheme = prefersDark ? "dark" : "light";
-        }
-
+        
         this.apply(this.currentTheme);
 
         themeToggle.addEventListener("click", () => {

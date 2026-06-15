@@ -10,9 +10,9 @@ const formModule = {
         e.preventDefault();
 
         const fields = {
-            name: { input: document.getElementById("name"), error: document.getElementById("name-error"), msg: "이름을 입력해 주세요." },
-            email: { input: document.getElementById("email"), error: document.getElementById("email-error"), msg: "이메일을 입력해 주세요." },
-            message: { input: document.getElementById("message"), error: document.getElementById("message-error"), msg: "메시지를 입력해 주세요." }
+            name: { input: document.getElementById("name"), error: document.getElementById("name-error"), msg: "이름을 채워주세요." },
+            email: { input: document.getElementById("email"), error: document.getElementById("email-error"), msg: "이메일을 채워주세요." },
+            message: { input: document.getElementById("message"), error: document.getElementById("message-error"), msg: "메시지를 채워주세요." }
         };
 
         let isValid = true;
@@ -30,12 +30,12 @@ const formModule = {
         });
 
         if (fields.email.input.value.trim() && !emailRegex.test(fields.email.input.value.trim())) {
-            if (fields.email.error) fields.email.error.textContent = "올바른 이메일 형식이 아닙니다.";
+            if (fields.email.error) fields.email.error.textContent = "올바른 이메일 포맷이 아닙니다.";
             isValid = false;
         }
 
         if (isValid) {
-            if (successDiv) successDiv.textContent = "🚀 메시지가 성공적으로 검증되었습니다!";
+            if (successDiv) successDiv.textContent = "🚀 유효성 검사가 완료되었습니다!";
             document.getElementById("contact-form").reset();
         }
     }

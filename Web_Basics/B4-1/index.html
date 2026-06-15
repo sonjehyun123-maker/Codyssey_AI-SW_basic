@@ -18,7 +18,7 @@
         <nav class="navbar">
             <h1 class="logo">Jaehyun</h1>
 
-            <button id="theme-toggle" style="background: none; border: none; font-size: 20px; cursor: pointer;">🌙</button>
+            <button id="theme-toggle" class="theme-btn">🌙</button>
 
             <ul class="nav-menu">
                 <li><a href="#hero">Home</a></li>
@@ -35,6 +35,7 @@
     </header>
 
     <main>
+
         <section id="hero" class="fade-in">
             <h2>안녕하세요.</h2>
             <p>컴퓨터공학을 공부하는 재현입니다.</p>
@@ -45,7 +46,7 @@
             <h2>About Me</h2>
             <article class="about-container">
                 <img src="./images/profile.jpg" alt="재현 프로필 이미지">
-                <div>
+                <div class="about-text">
                     <p>백엔드, Linux, Docker, 시스템 프로그래밍에 관심이 있습니다.</p>
                 </div>
             </article>
@@ -65,49 +66,24 @@
 
         <section id="projects" class="fade-in">
             <h2>Projects</h2>
-            <div class="filter-container" style="display: flex; gap: 10px; margin-bottom: 20px;">
+
+            <div class="filter-container">
                 <button class="filter-btn active" data-lang="all">All</button>
                 <button class="filter-btn" data-lang="c">C/C++</button>
                 <button class="filter-btn" data-lang="javascript">JavaScript</button>
                 <button class="filter-btn" data-lang="other">Others</button>
             </div>
+
             <div class="project-grid" id="project-container">
-                <p style="text-align:center; width:100%;">🔄 로딩 중...</p>
+                <article class="project-card">
+                    <h3>Loading...</h3>
+                    <p>GitHub API 연동 중</p>
+                </article>
             </div>
         </section>
 
         <section id="contact" class="fade-in">
             <h2>Contact</h2>
             <form id="contact-form" novalidate>
-                <div style="display: flex; flex-direction: column; gap: 5px;">
+                <div>
                     <label for="name">이름</label>
-                    <input type="text" id="name" name="name">
-                    <span class="error-msg" id="name-error" style="color: #ef4444; font-size: 14px;"></span>
-                </div>
-
-                <div style="display: flex; flex-direction: column; gap: 5px;">
-                    <label for="email">이메일</label>
-                    <input type="email" id="email" name="email">
-                    <span class="error-msg" id="email-error" style="color: #ef4444; font-size: 14px;"></span>
-                </div>
-
-                <div style="display: flex; flex-direction: column; gap: 5px;">
-                    <label for="message">메시지</label>
-                    <textarea id="message" name="message" rows="5"></textarea>
-                    <span class="error-msg" id="message-error" style="color: #ef4444; font-size: 14px;"></span>
-                </div>
-
-                <button type="submit" class="btn" style="border: none; cursor: pointer;">전송</button>
-            </form>
-            <div id="form-success" style="color: #10b981; font-weight: bold; margin-top: 15px; text-align: center;"></div>
-        </section>
-    </main>
-
-    <footer>
-        <p>© 2026 Jaehyun</p>
-        <a href="https://github.com/sonjehyun123-maker">GitHub</a>
-    </footer>
-
-    <button id="scroll-top" class="scroll-top-btn" aria-label="맨 위로 이동">⬆️</button>
-</body>
-</html>
