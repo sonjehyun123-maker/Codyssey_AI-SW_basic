@@ -18,26 +18,24 @@ const formModule = {
         let isValid = true;
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        // 에러 초기화
-        Object.values(fields).forEach(f => f.error.textContent = "");
-        document.getElementById("form-success").textContent = "";
+        Object.values(fields).forEach(f => { if(f.error) f.error.textContent = ""; });
+        const successDiv = document.getElementById("form-success");
+        if (successDiv) successDiv.textContent = "";
 
-        // 필수 값 검증
         Object.keys(fields).forEach(key => {
             if (!fields[key].input.value.trim()) {
-                fields[key].error.textContent = fields[key].msg;
+                if (fields[key].error) fields[key].error.textContent = fields[key].msg;
                 isValid = false;
             }
         });
 
-        // 이메일 형식 별도 검증
         if (fields.email.input.value.trim() && !emailRegex.test(fields.email.input.value.trim())) {
-            fields.email.error.textContent = "올바른 이메일 형식이 아닙니다.";
+            if (fields.email.error) fields.email.error.textContent = "올바른 이메일 형식이 아닙니다.";
             isValid = false;
         }
 
         if (isValid) {
-            document.getElementById("form-success").textContent = "🚀 메시지가 성공적으로 전송되었습니다! (Mock)";
+            if (successDiv) successDiv.textContent = "🚀 메시지가 성공적으로 검증되었습니다!";
             document.getElementById("contact-form").reset();
         }
     }

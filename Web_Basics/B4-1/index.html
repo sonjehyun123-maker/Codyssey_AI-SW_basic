@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jaehyun Portfolio</title>
-    <link rel="shortcut icon" href="./images/favicon.png" type="image/png">
     <link rel="stylesheet" href="./css/style.css">
 
     <script src="./js/theme.js" defer></script>
@@ -15,22 +14,23 @@
 </head>
 <body>
 
-    <header class="header">
+    <header>
         <nav class="navbar">
             <h1 class="logo">Jaehyun</h1>
 
-            <div class="nav-container">
-                <ul class="nav-menu">
-                    <li><a href="#hero">Home</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#skills">Skills</a></li>
-                    <li><a href="#projects">Projects</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-                <button id="theme-toggle" class="theme-btn" aria-label="테마 변경">☀️</button>
-            </div>
+            <button id="theme-toggle" style="background: none; border: none; font-size: 20px; cursor: pointer;">🌙</button>
 
-            <button class="menu-btn">☰</button>
+            <ul class="nav-menu">
+                <li><a href="#hero">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+
+            <button class="menu-btn">
+                ☰
+            </button>
         </nav>
     </header>
 
@@ -65,49 +65,49 @@
 
         <section id="projects" class="fade-in">
             <h2>Projects</h2>
-            <div class="filter-container">
+            <div class="filter-container" style="display: flex; gap: 10px; margin-bottom: 20px;">
                 <button class="filter-btn active" data-lang="all">All</button>
                 <button class="filter-btn" data-lang="c">C/C++</button>
                 <button class="filter-btn" data-lang="javascript">JavaScript</button>
                 <button class="filter-btn" data-lang="other">Others</button>
             </div>
             <div class="project-grid" id="project-container">
-                </div>
+                <p style="text-align:center; width:100%;">🔄 로딩 중...</p>
+            </div>
         </section>
 
         <section id="contact" class="fade-in">
             <h2>Contact</h2>
             <form id="contact-form" novalidate>
-                <div class="form-group">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
                     <label for="name">이름</label>
                     <input type="text" id="name" name="name">
-                    <span class="error-msg" id="name-error"></span>
+                    <span class="error-msg" id="name-error" style="color: #ef4444; font-size: 14px;"></span>
                 </div>
 
-                <div class="form-group">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
                     <label for="email">이메일</label>
                     <input type="email" id="email" name="email">
-                    <span class="error-msg" id="email-error"></span>
+                    <span class="error-msg" id="email-error" style="color: #ef4444; font-size: 14px;"></span>
                 </div>
 
-                <div class="form-group">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
                     <label for="message">메시지</label>
                     <textarea id="message" name="message" rows="5"></textarea>
-                    <span class="error-msg" id="message-error"></span>
+                    <span class="error-msg" id="message-error" style="color: #ef4444; font-size: 14px;"></span>
                 </div>
 
-                <button type="submit" class="submit-btn">전송</button>
+                <button type="submit" class="btn" style="border: none; cursor: pointer;">전송</button>
             </form>
-            <div id="form-success" class="success-msg"></div>
+            <div id="form-success" style="color: #10b981; font-weight: bold; margin-top: 15px; text-align: center;"></div>
         </section>
     </main>
 
     <footer>
         <p>© 2026 Jaehyun</p>
-        <a href="https://github.com/sonjehyun123-maker" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://github.com/sonjehyun123-maker">GitHub</a>
     </footer>
 
     <button id="scroll-top" class="scroll-top-btn" aria-label="맨 위로 이동">⬆️</button>
-    
 </body>
 </html>

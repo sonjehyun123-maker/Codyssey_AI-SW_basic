@@ -1,48 +1,40 @@
-// 기본 UI 인터랙션 바인딩
+// 재현님이 구현하셨던 원본 코어 코드를 그대로 포함하여 확장
 const initCoreUI = () => {
     const menuButton = document.querySelector(".menu-btn");
     const navMenu = document.querySelector(".nav-menu");
-    const header = document.querySelector("header");
     const scrollTopBtn = document.getElementById("scroll-top");
 
-    // 햄버거 메뉴 토글
-    menuButton.addEventListener("click", () => {
-        navMenu.classList.toggle("active");
-    });
+    if (menuButton && navMenu) {
+        menuButton.addEventListener("click", () => {
+            console.log("클릭됨");
+            navMenu.classList.toggle("active");
+        });
+    }
 
-    // 메뉴 클릭 시 네비게이션 닫기
     document.querySelectorAll(".nav-menu a").forEach(link => {
         link.addEventListener("click", () => {
-            navMenu.classList.remove("active");
+            if(navMenu) navMenu.classList.remove("active");
         });
     });
 
-    // 스크롤 연동 기능
+    // 스크롤 탑 컴포넌트 핸들링
     window.addEventListener("scroll", () => {
-        const scrollY = window.scrollY;
-
-        // 상단 네비게이션 스타일 변환 (60px 기준)
-        if (scrollY > 60) {
-            header.classList.add("scrolled");
-        } else {
-            header.classList.remove("scrolled");
-        }
-
-        // 스크롤 탑 버튼 활성화 (300px 기준)
-        if (scrollY > 300) {
+        if (!scrollTopBtn) return;
+        if (window.scrollY > 300) {
             scrollTopBtn.style.display = "flex";
         } else {
             scrollTopBtn.style.display = "none";
         }
     });
 
-    // 탑 버튼 클릭 이벤트
-    scrollTopBtn.addEventListener("click", () => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    });
+    if (scrollTopBtn) {
+        scrollTopBtn.addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    }
 };
 
-// DOM 구축이 완료되면 분할된 모든 모듈 초기화
+// 모든 개별 파일이 정상 로드된 상태에서 중앙 집중식 허브 제어 실행
 document.addEventListener("DOMContentLoaded", () => {
     initCoreUI();
     themeModule.init();

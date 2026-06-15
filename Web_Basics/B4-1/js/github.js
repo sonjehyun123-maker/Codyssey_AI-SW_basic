@@ -10,13 +10,12 @@ const githubModule = {
 
     async fetchRepos() {
         const container = document.getElementById("project-container");
-        container.innerHTML = `<p style="text-align:center; width:100%;">🔄 로딩 중...</p>`;
+        if (!container) return;
 
         try {
             const response = await fetch(`https://api.github.com/users/${this.githubId}/repos?sort=updated`);
             if (!response.ok) throw new Error(`에러 발생 (코드: ${response.status})`);
 
-            // 데이터 수신 및 구조분해 할당 준비
             this.allProjects = await response.json();
             this.render(this.allProjects);
 
@@ -24,18 +23,21 @@ const githubModule = {
             console.error(error);
             container.innerHTML = `
                 <div style="text-align:center; width:100%;">
-                    <p class="error-msg">프로젝트를 불러올 수 없습니다. (Rate Limit 초과 또는 네트워크 오류)</p>
-                    <button id="retry-btn" class="btn" style="margin-top:10px;">다시 시도</button>
+                    <p style="color: #ef4444;">프로젝트를 불러올 수 없습니다. (API 한도 초과 또는 네트워크 오류)</p>
+                    <button id="retry-btn" class="btn" style="margin-top:10px; border:none; cursor:pointer;">다시 시도</button>
                 </div>
             `;
-            document.getElementById("retry-btn").addEventListener("click", () => this.fetchRepos());
+            const retryBtn = document.getElementById("retry-btn");
+            if (retryBtn) retryBtn.addEventListener("click", () => this.fetchRepos());
         }
     },
 
     render(projectsList) {
         const container = document.getElementById("project-container");
+        if (!container) return;
+
         if (projectsList.length === 0) {
-            container.innerHTML = `<p class="error-msg" style="text-align:center; width:100%;">표시할 프로젝트가 없습니다.</p>`;
+            container.innerHTML = `<p style="text-align:center; width:100%;">표시할 저장소가 없습니다.</p>`;
             return;
         }
 
