@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jaehyun Portfolio</title>
+
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+    <header>
+        <nav class="navbar">
+            <h1 class="logo">Jaehyun</h1>
+
+            <ul class="nav-menu">
+                <li><a href="#hero">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+
+            <button class="menu-btn">
+                ☰
+            </button>
+        </nav>
+    </header>
+
+    <main>
+
+        <section id="hero">
+            <h2>안녕하세요.</h2>
+            <p>컴퓨터공학을 공부하는 재현입니다.</p>
+
+            <a href="#projects" class="btn">
+                프로젝트 보기
+            </a>
+        </section>
+
+        <section id="about">
+
+            <h2>About Me</h2>
+
+            <article class="about-container">
+
+                <img
+                    src="./images/profile.jpg"
+                    alt="재현 프로필 이미지"
+                >
+
+                <div>
+                    <p>
+                        백엔드, Linux, Docker,
+                        시스템 프로그래밍에 관심이 있습니다.
+                    </p>
+                </div>
+
+            </article>
+
+        </section>
+
+        <section id="skills">
+
+            <h2>Skills</h2>
+
+            <ul class="skill-list">
+                <li>C</li>
+                <li>C++</li>
+                <li>Linux</li>
+                <li>Docker</li>
+                <li>Git</li>
+                <li>JavaScript</li>
+            </ul>
+
+        </section>
+
+        <section id="projects">
+
+            <h2>Projects</h2>
+
+            <div class="project-grid">
+
+                <article class="project-card">
+                    <h3>Loading...</h3>
+                    <p>GitHub API 연동 예정</p>
+                </article>
+
+            </div>
+
+        </section>
+
+        <section id="contact">
+
+            <h2>Contact</h2>
+
+            <form id="contact-form">
+
+                <div>
+                    <label for="name">이름</label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                    >
+                </div>
+
+                <div>
+                    <label for="email">이메일</label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                    >
+                </div>
+
+                <div>
+                    <label for="message">메시지</label>
+
+                    <textarea
+                        id="message"
+                        name="message"
+                        rows="5">
+                    </textarea>
+                </div>
+
+                <button type="submit">
+                    전송
+                </button>
+
+            </form>
+
+        </section>
+
+    </main>
+
+    <footer>
+        <p>© 2026 Jaehyun</p>
+
+        <a href="https://github.com/sonjehyun123-maker">
+            GitHub
+        </a>
+    </footer>
+
+    <script src="./js/main.js" defer></script>
+    
+</body>
+</html>
