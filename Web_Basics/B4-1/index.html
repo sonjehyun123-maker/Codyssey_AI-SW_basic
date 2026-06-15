@@ -4,66 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jaehyun Portfolio</title>
-
+    <link rel="shortcut icon" href="./images/favicon.png" type="image/png">
     <link rel="stylesheet" href="./css/style.css">
+
+    <script src="./js/theme.js" defer></script>
+    <script src="./js/github.js" defer></script>
+    <script src="./js/form.js" defer></script>
+    <script src="./js/animation.js" defer></script>
+    <script src="./js/main.js" defer></script>
 </head>
 <body>
 
-    <header>
+    <header class="header">
         <nav class="navbar">
             <h1 class="logo">Jaehyun</h1>
 
-            <ul class="nav-menu">
-                <li><a href="#hero">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#skills">Skills</a></li>
-                <li><a href="#projects">Projects</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
+            <div class="nav-container">
+                <ul class="nav-menu">
+                    <li><a href="#hero">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#skills">Skills</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+                <button id="theme-toggle" class="theme-btn" aria-label="테마 변경">☀️</button>
+            </div>
 
-            <button class="menu-btn">
-                ☰
-            </button>
+            <button class="menu-btn">☰</button>
         </nav>
     </header>
 
     <main>
-
-        <section id="hero">
+        <section id="hero" class="fade-in">
             <h2>안녕하세요.</h2>
             <p>컴퓨터공학을 공부하는 재현입니다.</p>
-
-            <a href="#projects" class="btn">
-                프로젝트 보기
-            </a>
+            <a href="#projects" class="btn">프로젝트 보기</a>
         </section>
 
-        <section id="about">
-
+        <section id="about" class="fade-in">
             <h2>About Me</h2>
-
             <article class="about-container">
-
-                <img
-                    src="./images/profile.jpg"
-                    alt="재현 프로필 이미지"
-                >
-
+                <img src="./images/profile.jpg" alt="재현 프로필 이미지">
                 <div>
-                    <p>
-                        백엔드, Linux, Docker,
-                        시스템 프로그래밍에 관심이 있습니다.
-                    </p>
+                    <p>백엔드, Linux, Docker, 시스템 프로그래밍에 관심이 있습니다.</p>
                 </div>
-
             </article>
-
         </section>
 
-        <section id="skills">
-
+        <section id="skills" class="fade-in">
             <h2>Skills</h2>
-
             <ul class="skill-list">
                 <li>C</li>
                 <li>C++</li>
@@ -72,79 +61,53 @@
                 <li>Git</li>
                 <li>JavaScript</li>
             </ul>
-
         </section>
 
-        <section id="projects">
-
+        <section id="projects" class="fade-in">
             <h2>Projects</h2>
-
-            <div class="project-grid">
-
-                <article class="project-card">
-                    <h3>Loading...</h3>
-                    <p>GitHub API 연동 예정</p>
-                </article>
-
+            <div class="filter-container">
+                <button class="filter-btn active" data-lang="all">All</button>
+                <button class="filter-btn" data-lang="c">C/C++</button>
+                <button class="filter-btn" data-lang="javascript">JavaScript</button>
+                <button class="filter-btn" data-lang="other">Others</button>
             </div>
-
+            <div class="project-grid" id="project-container">
+                </div>
         </section>
 
-        <section id="contact">
-
+        <section id="contact" class="fade-in">
             <h2>Contact</h2>
-
-            <form id="contact-form">
-
-                <div>
+            <form id="contact-form" novalidate>
+                <div class="form-group">
                     <label for="name">이름</label>
-
-                    <input
-                        type="text"
-                        id="name"
-                        name="name"
-                    >
+                    <input type="text" id="name" name="name">
+                    <span class="error-msg" id="name-error"></span>
                 </div>
 
-                <div>
+                <div class="form-group">
                     <label for="email">이메일</label>
-
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                    >
+                    <input type="email" id="email" name="email">
+                    <span class="error-msg" id="email-error"></span>
                 </div>
 
-                <div>
+                <div class="form-group">
                     <label for="message">메시지</label>
-
-                    <textarea
-                        id="message"
-                        name="message"
-                        rows="5">
-                    </textarea>
+                    <textarea id="message" name="message" rows="5"></textarea>
+                    <span class="error-msg" id="message-error"></span>
                 </div>
 
-                <button type="submit">
-                    전송
-                </button>
-
+                <button type="submit" class="submit-btn">전송</button>
             </form>
-
+            <div id="form-success" class="success-msg"></div>
         </section>
-
     </main>
 
     <footer>
         <p>© 2026 Jaehyun</p>
-
-        <a href="https://github.com/sonjehyun123-maker">
-            GitHub
-        </a>
+        <a href="https://github.com/sonjehyun123-maker" target="_blank" rel="noopener noreferrer">GitHub</a>
     </footer>
 
-    <script src="./js/main.js" defer></script>
+    <button id="scroll-top" class="scroll-top-btn" aria-label="맨 위로 이동">⬆️</button>
     
 </body>
 </html>
