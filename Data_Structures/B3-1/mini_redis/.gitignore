@@ -1,0 +1,5 @@
+# Python 캐시 파일 제외
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
