@@ -1,3 +1,4 @@
+# 이중연결리스트
 from entry import Entry
 
 class DoublyLinkedList:
