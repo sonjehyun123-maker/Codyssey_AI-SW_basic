@@ -78,7 +78,7 @@ class MiniRedis:
 
         if self.maxmemory > 0 and entry_size > self.maxmemory:
             return "(error) OOM command not allowed when used_memory > 'maxmemory'"
-
+        # 기존 존재하는 키일 경우
         existing = self.table.get(key)
         if existing is not None:
             self.used_memory -= self._size_of(existing.key, existing.value)
@@ -86,6 +86,7 @@ class MiniRedis:
             existing.expire_at = None  # 덮어쓰기 시 기존 TTL 해제 요구사항 준수
             self.used_memory += entry_size
             self.lru.move_to_front(existing)
+        # 새로운 키일 경우
         else:
             entry = Entry(key, value)
             self.lru.insert_front(entry)
