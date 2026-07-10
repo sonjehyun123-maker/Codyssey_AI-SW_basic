@@ -47,7 +47,7 @@ class MiniRedis:
             self._delete_key_internal(key)
             return True
         return False
-
+    
     def _sweep_expired_heap(self):
         """능동 만료(Active Expire) 검사"""
         now = time.time()
