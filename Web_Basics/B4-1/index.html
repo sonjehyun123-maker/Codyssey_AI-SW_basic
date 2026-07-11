@@ -1,89 +1,185 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jaehyun Portfolio</title>
-    <link rel="stylesheet" href="./css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jaehyun Son — Portfolio</title>
+  <meta name="description" content="Anyang University CS 재학생 손재현의 개발 포트폴리오. 시스템 프로그래밍, Linux/Docker, 웹 개발 프로젝트를 소개합니다." />
 
-    <script src="./js/theme.js" defer></script>
-    <script src="./js/github.js" defer></script>
-    <script src="./js/form.js" defer></script>
-    <script src="./js/animation.js" defer></script>
-    <script src="./js/main.js" defer></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
-    <header>
-        <nav class="navbar">
-            <h1 class="logo">Jaehyun</h1>
+  <header class="site-header" id="site-header">
+    <nav class="nav container">
+      <a href="#hero" class="nav__logo">jh<span class="nav__logo-cursor">_</span></a>
 
-            <button id="theme-toggle" class="theme-btn">🌙</button>
+      <button class="nav__burger" id="burger" aria-label="메뉴 열기" aria-expanded="false" aria-controls="nav-menu">
+        <span></span><span></span><span></span>
+      </button>
 
-            <ul class="nav-menu">
-                <li><a href="#hero">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#skills">Skills</a></li>
-                <li><a href="#projects">Projects</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
+      <ul class="nav__menu" id="nav-menu">
+        <li><a href="#about" class="nav__link">about</a></li>
+        <li><a href="#skills" class="nav__link">skills</a></li>
+        <li><a href="#projects" class="nav__link">projects</a></li>
+        <li><a href="#contact" class="nav__link">contact</a></li>
+      </ul>
 
-            <button class="menu-btn">
-                ☰
-            </button>
-        </nav>
-    </header>
+      <button class="theme-toggle" id="theme-toggle" aria-label="다크 모드 전환">
+        <i class="fa-solid fa-moon"></i>
+      </button>
+    </nav>
+  </header>
 
-    <main>
+  <main>
 
-        <section id="hero" class="fade-in">
-            <h2>안녕하세요.</h2>
-            <p>재현입니다.</p>
-            <a href="#projects" class="btn">프로젝트 보기</a>
-        </section>
+    <!-- HERO -->
+    <section class="hero" id="hero">
+      <div class="container hero__grid">
+        <div class="hero__text reveal">
+          <p class="eyebrow">Anyang University · Computer Science, 2nd year</p>
+          <h1 class="hero__title">시스템을 이해하고<br />제품으로 연결하는<br /><span class="accent">개발자, 손재현</span></h1>
+          <p class="hero__desc">C/C++ 시스템 프로그래밍부터 Linux 인프라, 웹 프론트엔드까지 — 직접 만든 것으로 증명합니다. 창업을 목표로 사이드 프로젝트 "한끼"를 개발 중입니다.</p>
+          <div class="hero__cta">
+            <a href="#projects" class="btn btn--primary">프로젝트 보기</a>
+            <a href="#contact" class="btn btn--ghost">연락하기</a>
+          </div>
+        </div>
 
-        <section id="about" class="fade-in">
-            <h2>About Me</h2>
-            <article class="about-container">
-                <img src="./images/profile.jpg" alt="재현 프로필 이미지">
-                <div class="about-text">
-                    <p>백엔드, Linux, Docker, 시스템 프로그래밍에 관심이 있습니다.</p>
-                </div>
-            </article>
-        </section>
+        <div class="terminal reveal" aria-hidden="true">
+          <div class="terminal__bar">
+            <span class="dot dot--red"></span>
+            <span class="dot dot--yellow"></span>
+            <span class="dot dot--green"></span>
+            <span class="terminal__title">jaehyun@devbook — zsh</span>
+          </div>
+          <div class="terminal__body">
+            <p><span class="prompt">jaehyun@devbook</span> <span class="path">~</span> <span class="sym">$</span> ./introduce_me.sh</p>
+            <p class="out">> name: Son Jaehyun</p>
+            <p class="out">> stack: C/C++, Python, JS, Docker</p>
+            <p class="out">> building: 한끼 (food/lifestyle app)</p>
+            <p class="out">> status: 개발 중<span class="cursor">▌</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
 
-        <section id="skills" class="fade-in">
-            <h2>Skills</h2>
-            <ul class="skill-list">
-                <li>C</li>
-                <li>C++</li>
-                <li>Linux</li>
-                <li>Docker</li>
-                <li>Git</li>
-                <li>JavaScript</li>
-            </ul>
-        </section>
+    <!-- ABOUT -->
+    <section class="about" id="about">
+      <div class="container about__grid">
+        <figure class="about__photo reveal">
+          <img src="images/profile.jpg" alt="손재현 프로필 사진" onerror="this.src='https://placehold.co/480x480/14171C/E7EAEE?text=Jaehyun'" />
+        </figure>
+        <div class="about__content reveal">
+          <h2 class="section-title"><span class="section-num">01</span> About</h2>
+          <p class="about__tagline">시스템의 동작 원리를 파고들고, 그걸 제품으로 만드는 개발자</p>
+          <p>Codyssey AI 올인원 프로그램에서 시스템 모니터링 자동화와 장애 트러블슈팅을 직접 구현하며 실전 감각을 키웠습니다. 자료구조를 라이브러리로만 쓰지 않고 직접 구현해보며 원리를 이해하는 것을 중요하게 생각합니다.</p>
+          <ul class="about__facts">
+            <li><i class="fa-solid fa-server"></i> Codyssey AI 올인원 — RBAC/Cron 기반 시스템 모니터링 자동화 구현</li>
+            <li><i class="fa-solid fa-bug"></i> OOM · CPU 과점유 · 데드락 3종 장애 재현 및 GitHub Issue 포맷 분석 리포트 작성</li>
+            <li><i class="fa-solid fa-diagram-project"></i> Mini Redis CLI — 이중 연결 리스트 / 체이닝 해시맵 / 최소힙 직접 구현</li>
+            <li><i class="fa-solid fa-graduation-cap"></i> Anyang University, Computer Science (2학년)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
 
-        <section id="projects" class="fade-in">
-            <h2>Projects</h2>
+    <!-- SKILLS -->
+    <section class="skills" id="skills">
+      <div class="container">
+        <h2 class="section-title"><span class="section-num">02</span> Skills</h2>
+        <div class="skills__grid">
+          <div class="skill-card reveal">
+            <i class="fa-solid fa-terminal"></i>
+            <h3>Systems &amp; Languages</h3>
+            <p>C, C++, Python — 자료구조, 알고리즘, 메모리 관리</p>
+          </div>
+          <div class="skill-card reveal">
+            <i class="fa-brands fa-linux"></i>
+            <h3>Infra &amp; DevOps</h3>
+            <p>Linux CLI, Docker, 프로세스/메모리 트러블슈팅</p>
+          </div>
+          <div class="skill-card reveal">
+            <i class="fa-solid fa-code"></i>
+            <h3>Web</h3>
+            <p>HTML, CSS, JavaScript (ES6+), 반응형 UI 설계</p>
+          </div>
+          <div class="skill-card reveal">
+            <i class="fa-solid fa-diagram-project"></i>
+            <h3>Product</h3>
+            <p>서비스 기획, 프로토타이핑, Git 협업 워크플로우</p>
+          </div>
+        </div>
+      </div>
+    </section>
 
-            <div class="filter-container">
-                <button class="filter-btn active" data-lang="all">All</button>
-                <button class="filter-btn" data-lang="c">C/C++</button>
-                <button class="filter-btn" data-lang="javascript">JavaScript</button>
-                <button class="filter-btn" data-lang="other">Others</button>
-            </div>
+    <!-- PROJECTS -->
+    <section class="projects" id="projects">
+      <div class="container">
+        <h2 class="section-title"><span class="section-num">03</span> Projects</h2>
+        <p class="section-sub">GitHub API로 불러온 최신 저장소입니다.</p>
 
-            <div class="project-grid" id="project-container">
-                <article class="project-card">
-                    <h3>Loading...</h3>
-                    <p>GitHub API 연동 중</p>
-                </article>
-            </div>
-        </section>
+        <div id="projects-status" class="projects__status" role="status"></div>
+        <div class="projects__grid" id="projects-grid"></div>
+      </div>
+    </section>
 
-        <section id="contact" class="fade-in">
-            <h2>Contact</h2>
-            <form id="contact-form" novalidate>
-                <div>
-                    <label for="name">이름</label>
+    <!-- CONTACT -->
+    <section class="contact" id="contact">
+      <div class="container contact__grid">
+        <div class="reveal">
+          <h2 class="section-title"><span class="section-num">04</span> Contact</h2>
+          <p>협업 제안, 질문 모두 환영입니다. 아래 폼으로 편하게 연락 주세요.</p>
+        </div>
+
+        <form id="contact-form" class="contact-form reveal" novalidate>
+          <div class="form-field">
+            <label for="name">이름</label>
+            <input type="text" id="name" name="name" placeholder="홍길동" />
+            <span class="error-msg" id="name-error"></span>
+          </div>
+
+          <div class="form-field">
+            <label for="email">이메일</label>
+            <input type="text" id="email" name="email" placeholder="you@example.com" />
+            <span class="error-msg" id="email-error"></span>
+          </div>
+
+          <div class="form-field">
+            <label for="message">메시지</label>
+            <textarea id="message" name="message" rows="5" placeholder="전달하실 내용을 입력해주세요"></textarea>
+            <span class="error-msg" id="message-error"></span>
+          </div>
+
+          <button type="submit" class="btn btn--primary">보내기</button>
+          <p class="form-success" id="form-success" role="status"></p>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer__grid">
+      <p>&copy; 2026 Son Jaehyun. All rights reserved.</p>
+      <div class="footer__links">
+        <a href="https://github.com/sonjehyun123-maker" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i></a>
+        <a href="#" target="_blank" rel="noopener"><i class="fa-brands fa-linkedin"></i></a>
+        <a href="mailto:contact@example.com"><i class="fa-solid fa-envelope"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <button id="scroll-top" class="scroll-top" aria-label="맨 위로 이동">
+    <i class="fa-solid fa-arrow-up"></i>
+  </button>
+
+  <script src="js/main.js" defer></script>
+</body>
+</html>
