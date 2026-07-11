@@ -1,3 +1,5 @@
+
+
 # agent-leak-app 장애 진단 및 트러블슈팅 종합 보고서
 
 ## 0. 시스템 초기 설정 (Environment Variables)
@@ -532,3 +534,7 @@ fi
 - 서비스 중단 시간(MTTR) 감소
 - 운영자 개입 최소화
 - 시스템 가용성 및 안정성 향상
+
+
+
+https://github.com/davekim-dev/basic1-2
