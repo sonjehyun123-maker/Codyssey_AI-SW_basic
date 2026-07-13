@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-main.py (REPL 인터페이스)
-"""
 
 import sys
 from redis_db import MiniRedis
@@ -21,10 +18,6 @@ def parse_int(token):
 
 
 def split_arguments(line):
-    """
-    공백 기준 슬라이싱을 하되, 큰따옴표로 감싸진 토큰은 
-    하나의 문자열 인자로 보존하는 간이 파서입니다.
-    """
     tokens = []
     current = []
     in_quotes = False

@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-MinHeap (TTL 만료 관리용 완전 이진트리)
-"""
 
 class MinHeap:
     def __init__(self):

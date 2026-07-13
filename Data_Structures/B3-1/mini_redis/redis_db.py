@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-MiniRedis 스토리지 코어 엔진
-"""
 
 import time
 import math
