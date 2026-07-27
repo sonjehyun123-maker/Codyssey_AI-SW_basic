@@ -16,6 +16,8 @@ class HashMap:
         return hash_value % self.bucket_count
 
     def put(self, commit):
+        while self.get(commit.hash) is not None:
+            commit.extend_hash()
         index = self._hash_index(commit.hash)
         new_node = Node(commit)
         new_node.next = self.buckets[index]

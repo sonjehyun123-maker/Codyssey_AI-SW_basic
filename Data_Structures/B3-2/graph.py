@@ -3,7 +3,6 @@ from collections import deque
 
 # 해시맵 커밋 수집
 def get_all_commits(hashmap):
-    """해시맵의 모든 커밋 객체를 수집하여 리스트로 반환합니다."""
     commits = []
     for bucket in hashmap.buckets:
         current = bucket
@@ -70,7 +69,7 @@ def path(hashmap, hash1, hash2):
     visited = {hash1}
     shortest_paths = []
     shortest_length = None
-
+ 
     while queue:
         current_path = queue.popleft()
         if shortest_length is not None and len(current_path) > shortest_length:
@@ -85,9 +84,10 @@ def path(hashmap, hash1, hash2):
                 new_path = current_path + [neighbor]
                 queue.append(new_path)
         visited.add(last_node)
-
+ 
     if not shortest_paths:
         return None
-
+ 
     shortest_paths.sort(key=lambda p: "->".join(p))
     return shortest_paths[0]
+ 
