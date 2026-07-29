@@ -1,8 +1,7 @@
 from collections import deque
 
-
-# 해시맵 커밋 수집
 def get_all_commits(hashmap):
+    "해시맵 커밋 수집"
     commits = []
     for bucket in hashmap.buckets:
         current = bucket
@@ -11,15 +10,15 @@ def get_all_commits(hashmap):
             current = current.next
     return commits
 
-
-# 위상정렬 / 깊이 탐색
 def log(hashmap):
+    "위상정렬 / 깊이 탐색"
     all_commits = get_all_commits(hashmap)
     commit_by_hash = {c.hash: c for c in all_commits}
     visited = set()
     result = []
 
     def visit(commit_hash):
+        "재귀적으로 부모 커밋을 방문하여 결과에 추가"
         if commit_hash in visited:
             return
         visited.add(commit_hash)
@@ -33,9 +32,8 @@ def log(hashmap):
 
     return result
 
-
-# 조상 커밋 탐색
 def ancestors(hashmap, start_hash):
+    "조상 커밋 탐색"
     commit_by_hash = {c.hash: c for c in get_all_commits(hashmap)}
     visited = set()
     queue = deque([start_hash])
@@ -50,9 +48,8 @@ def ancestors(hashmap, start_hash):
 
     return visited
 
-
-# 무향 그래프 생성
 def build_undirected_graph(hashmap):
+    "무향 그래프 생성"
     all_commits = get_all_commits(hashmap)
     graph = {c.hash: [] for c in all_commits}
     for commit in all_commits:
@@ -61,9 +58,8 @@ def build_undirected_graph(hashmap):
             graph[parent_hash].append(commit.hash)
     return graph
 
-
-# 최단 경로 탐색
 def path(hashmap, hash1, hash2):
+    "최단 경로 탐색"
     graph = build_undirected_graph(hashmap)
     queue = deque([[hash1]])
     visited = {hash1}
