@@ -6,12 +6,12 @@ from graph import log as graph_log, ancestors as graph_ancestors, path as graph_
 from sort_ import sort_by_date, sort_by_author
 
 
-# 타임스탬프를 읽기 쉬운 문자열로 변환
+"타임스탬프를 읽기 쉬운 문자열로 변환"
 def format_time(timestamp):
     return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(timestamp))
 
 
-# 커밋 해시에 연결된 브랜치 태그를 가져옴
+"커밋 해시에 연결된 브랜치 태그를 가져옴"
 def branch_tags(repo, commit_hash):
     tags = [name for name, head_hash in repo.branches.items() if head_hash == commit_hash]
     if not tags:
@@ -19,14 +19,14 @@ def branch_tags(repo, commit_hash):
     return " [" + ", ".join(tags) + "]"
 
 
-# 커밋 정보를 화면에 출력
+"커밋 정보를 화면에 출력"
 def print_commit(repo, commit):
     tags = branch_tags(repo, commit.hash)
     print(f"commit {commit.hash} ({commit.author}, {format_time(commit.timestamp)}){tags}")
     print(commit.message)
 
 
-# 저장소 초기화 명령 처리
+"저장소 초기화 명령 처리"
 def handle_init(repo, args):
     if len(args) != 1:
         print("Invalid args")
@@ -37,7 +37,7 @@ def handle_init(repo, args):
     print(f"Current user: {repo.current_user}")
 
 
-# 새 브랜치를 생성하는 명령 처리
+"새 브랜치를 생성하는 명령 처리"
 def handle_branch(repo, args):
     if repo.head is None or len(args) != 1:
         print("Invalid args")
@@ -47,7 +47,7 @@ def handle_branch(repo, args):
     print(f"Created branch: {branch_name}")
 
 
-# 브랜치를 전환하는 명령 처리
+"브랜치를 전환하는 명령 처리"
 def handle_switch(repo, args):
     if repo.head is None or len(args) != 1:
         print("Invalid args")
@@ -60,7 +60,7 @@ def handle_switch(repo, args):
     print(f"Switched to branch: {branch_name}")
 
 
-# 커밋을 생성하는 명령 처리
+"커밋을 생성하는 명령 처리"
 def handle_commit(repo, args):
     if repo.head is None or len(args) != 1:
         print("Invalid args")
@@ -70,7 +70,7 @@ def handle_commit(repo, args):
     print(f"[{repo.head} {commit.hash}] {message}")
 
 
-# 로그 출력과 정렬 옵션 처리
+"로그 출력과 정렬 옵션 처리"
 def handle_log(repo, args):
     if repo.head is None:
         print("Invalid args")
@@ -96,7 +96,7 @@ def handle_log(repo, args):
         print_commit(repo, commit)
 
 
-# 두 커밋 사이의 경로를 찾는 명령 처리
+"두 커밋 사이의 경로를 찾는 명령 처리"
 def handle_path(repo, args):
     if repo.head is None or len(args) != 2:
         print("Invalid args")
@@ -116,7 +116,7 @@ def handle_path(repo, args):
         print("Path: " + " -> ".join(result))
 
 
-# 지정 커밋의 조상 커밋을 출력하는 명령 처리
+"지정 커밋의 조상 커밋을 출력하는 명령 처리"
 def handle_ancestors(repo, args):
     if repo.head is None or len(args) != 1:
         print("Invalid args")
@@ -135,7 +135,7 @@ def handle_ancestors(repo, args):
         print_commit(repo, commit)
 
 
-# 커밋 메시지나 작성자 검색을 처리하는 명령
+"커밋 메시지나 작성자 검색을 처리하는 명령"
 def handle_search(repo, args):
     if repo.head is None or len(args) != 1:
         print("Invalid args")
