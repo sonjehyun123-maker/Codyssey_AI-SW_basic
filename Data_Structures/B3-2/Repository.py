@@ -1,6 +1,6 @@
 from entry import Commit
 from hashmap import HashMap
-from index import InvertedIndex
+from git_index import InvertedIndex
 
 
 class Repository:
