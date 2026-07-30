@@ -1,9 +1,9 @@
 import shlex
 import time
 
-from repository import Repository
+from Repository import Repository
 from graph import log as graph_log, ancestors as graph_ancestors, path as graph_path, get_all_commits
-from sort import sort_by_date, sort_by_author
+from sort_ import sort_by_date, sort_by_author
 
 
 def format_time(timestamp):
