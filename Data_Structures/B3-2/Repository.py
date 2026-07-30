@@ -14,6 +14,9 @@ class Repository:
 
     def init(self, user_name):
         "저장소 초기화 및 기본 브랜치(main) 설정"
+        if self.head is not None:
+            self.current_user = user_name
+            return
         self.current_user = user_name
         self.branches = {"main": None}
         self.head = "main"
