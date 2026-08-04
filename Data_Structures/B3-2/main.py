@@ -28,6 +28,7 @@ def print_commit(repo, commit):
 
 def handle_init(repo, args):
     """INIT 처리. 저장소를 초기화하고 현재 브랜치와 사용자 정보를 출력한다."""
+    
     if len(args) != 1:
         print("Invalid args")
         return
