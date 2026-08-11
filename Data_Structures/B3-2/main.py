@@ -33,7 +33,7 @@ def branch_tags(repo, commit_hash):
 
 def print_commit(repo, commit):
     tags = branch_tags(repo, commit.hash)
-    print(f"commit {commit.hash}{tags}")
+    print(f"commit  {commit.hash}{tags}")
     print(f"Author: {commit.author}")
     print(f"Date:   {format_time(commit.timestamp)}")
     print()

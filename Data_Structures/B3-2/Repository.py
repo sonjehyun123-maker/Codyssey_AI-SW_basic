@@ -26,7 +26,7 @@ class Repository:
         """현재 HEAD가 가리키는 커밋을 가리키는 새 브랜치를 만든다."""
         current_commit_hash = self.branches.get(self.head)
         if current_commit_hash is None:
-            raise ValueError("Cannot create branch before the current branch has a commit")
+            raise ValueError("Fatal error: No commits in main branch.")
         self.branches[branch_name] = current_commit_hash
 
     def switch(self, branch_name):
