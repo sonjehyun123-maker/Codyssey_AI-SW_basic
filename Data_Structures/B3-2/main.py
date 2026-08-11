@@ -1,7 +1,7 @@
 import shlex
 import time
 
-from repository import Repository
+from Repository import Repository
 from graph import log as graph_log, ancestors as graph_ancestors, path as graph_path, get_all_commits
 from sort import sort_by_date, sort_by_author
 
@@ -70,7 +70,11 @@ def handle_branch(repo, args):
     if branch_name in repo.branches:
         print(f"Branch already exists: {branch_name}")
         return
-    repo.branch(branch_name)
+    try:
+        repo.branch(branch_name)
+    except ValueError as exc:
+        print(str(exc))
+        return
     print(f"Created branch: {branch_name}")
 
 
