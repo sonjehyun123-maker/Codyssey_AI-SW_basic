@@ -17,16 +17,28 @@ def format_time(timestamp):
 
 
 def branch_tags(repo, commit_hash):
-    tags = [name for name, head_hash in repo.branches.items() if head_hash == commit_hash]
+    """이 커밋을 tip으로 가리키는 브랜치 이름을 (HEAD -> 브랜치, 다른브랜치) 형태로 반환한다."""
+    tags = []
+    for name, head_hash in repo.branches.items():
+        if head_hash != commit_hash:
+            continue
+        if name == repo.head:
+            tags.append(f"HEAD -> {name}")
+        else:
+            tags.append(name)
     if not tags:
         return ""
-    return " [" + ", ".join(tags) + "]"
+    return " (" + ", ".join(tags) + ")"
 
 
 def print_commit(repo, commit):
     tags = branch_tags(repo, commit.hash)
-    print(f"commit {short_hash(commit.hash)} ({commit.author}, {format_time(commit.timestamp)}){tags}")
-    print(commit.message)
+    print(f"commit {commit.hash}{tags}")
+    print(f"Author: {commit.author}")
+    print(f"Date:   {format_time(commit.timestamp)}")
+    print()
+    print(f"    {commit.message}")
+    print()
 
 
 def resolve_hash(repo, prefix):
