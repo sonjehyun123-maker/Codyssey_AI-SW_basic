@@ -13,5 +13,5 @@
 | **자료구조와 알고리즘** | • [Mini Redis 구축](./Data_Structures/B3-1/B3-1.md)<br>• [Mini Git 구축](./Data_Structures/B3-2/B3-2.md) |
 | **웹 기초와 프론트엔드** | • [웹 기초 완성, 나만의 포트폴리오 사이트](./Web_Basics/B4-1.md)<br>• React 핵심 개념 마스터 |
 | **데이터베이스와 백엔드** | • [SQL로 만드는 나만의 데이터베이스 설계](./DB_Backend/B5-1.md)<br>• FastAPI 기반 CRUD API 개발<br>• 인증과 연관관계로 완성하는 백엔드 심화 |
-| **클라우드와 AI API** | • 클라우드 환경에서 웹 서비스 배포 및 운영<br>• AI 기반 Git 커밋 & PR 자동화 봇 제작 |
+| **클라우드와 AI API** | • [클라우드 환경에서 웹 서비스 배포 및 운영](./Cloud_API/6-1/6-1.md)<br>• AI 기반 Git 커밋 & PR 자동화 봇 제작 |
 | **AI/SW 기초 Term Project** | • 웹 기반 AI 챗봇 서비스 구축 (기본 기능)<br>• 웹 기반 AI 챗봇 서비스 고도화 (심화 기능) |
