@@ -46,6 +46,9 @@ def generate_with_retry(prompt: str, validate_fn, args) -> str | None:
         if validate_fn(response):
             return response
         print("[WARN] 형식 검증 실패, 재시도합니다.")
+        print("[DEBUG] 실패한 응답 원문 ---")
+        print(response)
+        print("---")
 
     print(f"[ERROR] {MAX_RETRIES}번 시도했지만 형식 검증에 실패했습니다.")
     return None
