@@ -1,0 +1,163 @@
+mini-git> init son
+Initialized repository.
+Current branch: main
+Current user: son
+mini-git> commit "1"
+[main a4b8] 1
+mini-git> branch feature
+Created branch: feature
+mini-git> switch feature
+Switched to branch: feature
+mini-git> commit "2"
+[feature 65fa] 2
+mini-git> switch main
+Switched to branch: main
+mini-git> branch fea
+Created branch: fea
+mini-git> switch fea
+Switched to branch: fea
+mini-git> commit "3"
+[fea c562] 3
+mini-git> switch main
+Switched to branch: main
+mini-git> commit "4"
+[main d2e4] 4
+mini-git> init kim
+Initialized repository.
+Current branch: main
+Current user: kim
+mini-git> commit "5"
+[main ef8c] 5
+mini-git> log
+commit  a4b86b7c10def248594e9fe689ff966c0c40a7ab
+Author: son
+Date:   2026-08-18 12:52:41
+
+    1
+
+commit  65fa427fdc77fee1f85a24aa64dcd172b1bd108c (feature)
+Author: son
+Date:   2026-08-18 12:52:41
+
+    2
+
+commit  c5628831b654eeaa00c7a17487b81c0f914f24a1 (fea)
+Author: son
+Date:   2026-08-18 12:52:41
+
+    3
+
+commit  d2e4d8ad424fb9f5876b0589e784e7b9511d1aa7
+Author: son
+Date:   2026-08-18 12:52:41
+
+    4
+
+commit  ef8cf073afd5c4c90554a0b3fc6e126d4d98648c (HEAD -> main)
+Author: kim
+Date:   2026-08-18 12:52:41
+
+    5
+
+mini-git> log --sort-by=date
+commit  a4b86b7c10def248594e9fe689ff966c0c40a7ab
+Author: son
+Date:   2026-08-18 12:52:41
+
+    1
+
+commit  65fa427fdc77fee1f85a24aa64dcd172b1bd108c (feature)
+Author: son
+Date:   2026-08-18 12:52:41
+
+    2
+
+commit  c5628831b654eeaa00c7a17487b81c0f914f24a1 (fea)
+Author: son
+Date:   2026-08-18 12:52:41
+
+    3
+
+commit  d2e4d8ad424fb9f5876b0589e784e7b9511d1aa7
+Author: son
+Date:   2026-08-18 12:52:41
+
+    4
+
+commit  ef8cf073afd5c4c90554a0b3fc6e126d4d98648c (HEAD -> main)
+Author: kim
+Date:   2026-08-18 12:52:41
+
+    5
+
+mini-git> log --sort-by=author
+commit  ef8cf073afd5c4c90554a0b3fc6e126d4d98648c (HEAD -> main)
+Author: kim
+Date:   2026-08-18 12:52:41
+
+    5
+
+commit  65fa427fdc77fee1f85a24aa64dcd172b1bd108c (feature)
+Author: son
+Date:   2026-08-18 12:52:41
+
+    2
+
+commit  a4b86b7c10def248594e9fe689ff966c0c40a7ab
+Author: son
+Date:   2026-08-18 12:52:41
+
+    1
+
+commit  c5628831b654eeaa00c7a17487b81c0f914f24a1 (fea)
+Author: son
+Date:   2026-08-18 12:52:41
+
+    3
+
+commit  d2e4d8ad424fb9f5876b0589e784e7b9511d1aa7
+Author: son
+Date:   2026-08-18 12:52:41
+
+    4
+
+mini-git> search 1
+Found 1 commit(s):
+
+- a4b8: 1
+mini-git> search --author=son
+Found 4 commit(s):
+
+- a4b8: 1
+- 65fa: 2
+- c562: 3
+- d2e4: 4
+mini-git> path 65fa c562
+Path: 65fa -> a4b8 -> c562
+mini-git> ancestors ef8c
+commit  a4b86b7c10def248594e9fe689ff966c0c40a7ab
+Author: son
+Date:   2026-08-18 12:52:41
+
+    1
+
+commit  d2e4d8ad424fb9f5876b0589e784e7b9511d1aa7
+Author: son
+Date:   2026-08-18 12:52:41
+
+    4
+
+mini-git> --- 에러 케이스 ---
+mini-git> commit
+Invalid args
+mini-git> switch nonexistent
+Unknown branch: nonexistent
+mini-git> branch main
+Branch already exists: main
+mini-git> path zzzz ef8c
+Unknown commit: zzzz
+mini-git> ancestors zzzz
+Unknown commit: zzzz
+mini-git> ancestors 1234
+Ambiguous commit: 1234 matches 2 commits
+mini-git> exit
