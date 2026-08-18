@@ -21,7 +21,6 @@ def build_parser():
     common.add_argument("-temperature", type=float, default=0.7)
     common.add_argument("-max-tokens", type=int, default=1024, dest="max_tokens")
     common.add_argument("-safe-mode", action="store_true", dest="safe_mode")
-    common.add_argument("-env-path", default=None, dest="env_path")
 
     subparsers.add_parser("commit", parents=[common])
     subparsers.add_parser("pr", parents=[common])
