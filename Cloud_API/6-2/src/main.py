@@ -19,7 +19,7 @@ def build_parser():
     common = argparse.ArgumentParser(add_help=False)
     common.add_argument("-model", default="gemini-3.5-flash")
     common.add_argument("-temperature", type=float, default=0.7)
-    common.add_argument("-max-tokens", type=int, default=1024, dest="max_tokens")
+    common.add_argument("-max-tokens", type=int, default=5120, dest="max_tokens")
     common.add_argument("-safe-mode", action="store_true", dest="safe_mode")
 
     subparsers.add_parser("commit", parents=[common])

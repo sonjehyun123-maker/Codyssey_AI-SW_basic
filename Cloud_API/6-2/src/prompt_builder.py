@@ -3,7 +3,7 @@ import re
 
 def mask_sensitive(diff_text: str) -> str:
     diff_text = re.sub(r'[A-Za-z0-9_\-]{20,}', '[MASKED_KEY]', diff_text)
-    diff_text = re.sub(r'[\w.+-]+@[\w-]+\.\w+', '[MASKED_EMAIL]', diff_text)
+    diff_text = re.sub(r'[\w.+-]+@[\w.-]+\.\w+', '[MASKED_EMAIL]', diff_text)
     return diff_text
 
 
