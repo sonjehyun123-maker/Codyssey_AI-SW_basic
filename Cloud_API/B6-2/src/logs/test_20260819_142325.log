@@ -1,0 +1,97 @@
+===== 1. 유닛 테스트 (마스킹 / 검증 / 파싱, API 호출 없음) =====
+[PASS] API Key 마스킹
+[PASS] 다단계 도메인 이메일 완전 마스킹
+[PASS] safe_mode=True시 원본 미노출
+[PASS] safe_mode=False시 원본 그대로 전달
+[PASS] commit 검증: 정상 케이스 통과
+[PASS] commit 검증: 72자 초과 실패
+[PASS] pr 검증: 정상 케이스 통과
+[PASS] pr 검증: 헤더 누락 실패
+[PASS] pr 파싱: 제목 추출 정확도
+
+유닛 테스트 9/9 통과
+
+===== 2. 민감정보 포함 케이스 (safe-mode 사용) =====
+--- git diff ---
+diff --git a/app.py b/app.py
+index 5dfc6e7..984ce7d 100644
+--- a/app.py
++++ b/app.py
+@@ -1 +1,8 @@
+ # base file
++API_KEY = "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe"
++GITHUB_TOKEN = "ghp_1234567890abcdefghijklmnopqrstuvwx12"
++ADMIN_EMAIL = "jaehyun.son@anyang.ac.kr"
++
++
++def process_payment(user_email):
++    send_notification(user_email)
+\ No newline at end of file
+
+--- python3 main.py commit -safe-mode ---
+[INFO] Git status 수집 완료
+[INFO] Git diff 수집 완료: 14줄
+[INFO] AI API 요청 중... (시도 1/1)
+[DONE] 커밋 메시지 생성 완료
+--- Commit Message ---
+app.py에 API 키 및 결제 처리 기능 추가
+
+app.py 파일을 수정하여 서비스 운영에 필요한 설정값을 정의하고 결제 처리 로직을 추가했습니다.
+
+- API_KEY, GITHUB_TOKEN, ADMIN_EMAIL 설정 추가
+- 결제 요청을 처리하고 알림을 전송하는 process_payment 함수 구현
+----------------------
+
+--- python3 main.py pr -safe-mode ---
+[INFO] 현재 브랜치: master
+[INFO] AI API 요청 중... (시도 1/1)
+[DONE] PR 초안 생성 완료
+--- PR Title ---
+feat: 결제 처리 기능 추가 및 API 설정값 정의
+--- PR Body ---
+## Why
+- 결제 서비스를 도입하고 외부 API 연동 및 알림 발송을 위한 기초 환경을 구성하기 위함입니다
+
+## What
+- 결제 완료 후 사용자에게 알림을 발송하는 결제 처리 함수 추가
+- 외부 API 연동 및 관리자 소통을 위한 토큰과 이메일 등의 설정값 정의
+
+## How to Test
+- app.py 파일이 에러 없이 정상적으로 실행되는지 확인
+- 결제 처리 함수 호출 시 알림 발송 함수가 정상적으로 호출되는지 검증
+
+===== 3. 일반 케이스 (safe-mode 미사용) =====
+--- git diff ---
+diff --git a/app.py b/app.py
+index 5dfc6e7..85d3c3a 100644
+--- a/app.py
++++ b/app.py
+@@ -1 +1,7 @@
+ # base file
++def calculate_total(items):
++    return sum(item.price for item in items)
++
++
++def format_currency(amount):
++    return f"{amount:,}원"
+\ No newline at end of file
+
+--- python3 main.py commit  ---
+[INFO] Git status 수집 완료
+[INFO] Git diff 수집 완료: 13줄
+[INFO] AI API 요청 중... (시도 1/1)
+[DONE] 커밋 메시지 생성 완료
+--- Commit Message ---
+app.py에 합계 계산 및 금액 포맷팅 함수 추가
+
+app.py 파일에 금액 합산 및 원화 표기를 위한 함수를 추가했습니다.
+
+- calculate_total: 아이템 목록의 총 가격을 계산하는 기능 추가
+- format_currency: 금액을 천 단위 콤마와 원 표시 형식으로 포맷팅하는 기능 추가
+----------------------
+
+--- python3 main.py pr  ---
+[INFO] 현재 브랜치: master
+[INFO] AI API 요청 중... (시도 1/1)
+[ERROR] API 호출 실패: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent
+

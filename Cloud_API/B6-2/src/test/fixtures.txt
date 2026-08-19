@@ -1,0 +1,16 @@
+### SENSITIVE ###
+API_KEY = "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe"
+GITHUB_TOKEN = "ghp_1234567890abcdefghijklmnopqrstuvwx12"
+ADMIN_EMAIL = "jaehyun.son@anyang.ac.kr"
+
+
+def process_payment(user_email):
+    send_notification(user_email)
+
+### NORMAL ###
+def calculate_total(items):
+    return sum(item.price for item in items)
+
+
+def format_currency(amount):
+    return f"{amount:,}원"
