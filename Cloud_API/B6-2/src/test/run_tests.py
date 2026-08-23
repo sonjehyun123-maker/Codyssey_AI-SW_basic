@@ -38,7 +38,7 @@ def run_unit_tests(sensitive_content: str) -> bool:
     results.append(check("AWS Access Key 마스킹", "AKIAIOSFODNN7EXAMPLE" not in masked))
     results.append(check("다단계 도메인 이메일(ADMIN_EMAIL) 완전 마스킹", "anyang.ac.kr" not in masked))
     results.append(check("일반 도메인 이메일(SUPPORT_EMAIL) 완전 마스킹", "codyssey-helper.com" not in masked))
-    results.append(check("설명 주석은 그대로 유지됨", "결제 모듈 환경설정" in masked))
+    results.append(check("설명 주석은 그대로 유지됨", "이 블록의 목적" in masked))
 
     prompt_on = build_commit_prompt("M app.py", sensitive_content, safe_mode=True)
     results.append(check("safe_mode=True시 원본 미노출", "AIzaSyDaGmWKa4JsXZ" not in prompt_on))

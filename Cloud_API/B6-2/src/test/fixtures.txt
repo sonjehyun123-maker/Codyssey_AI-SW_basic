@@ -1,16 +1,69 @@
 ### SENSITIVE ###
-API_KEY = "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe"
+# ============================================================
+# [이 블록의 목적] 실제 서비스에 있을 법한 민감정보를 담았습니다.
+# safe-mode를 켜면 아래 값들이 [MASKED_KEY] / [MASKED_EMAIL]로
+# 가려진 채로 AI에게 전송되어야 합니다.
+# ============================================================
+
+# --- 1. API 인증키/토큰 (숫자가 섞여 있어서 마스킹 대상) ---
+GOOGLE_API_KEY = "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe"
 GITHUB_TOKEN = "ghp_1234567890abcdefghijklmnopqrstuvwx12"
+AWS_ACCESS_KEY_ID = "AKIAIOSFODNN7EXAMPLE1234567890"
+
+# --- 2. 이메일 주소 (이메일 형식이라 마스킹 대상) ---
 ADMIN_EMAIL = "jaehyun.son@anyang.ac.kr"
+SUPPORT_EMAIL = "support@codyssey-helper.com"
 
 
-def process_payment(user_email):
-    send_notification(user_email)
+def process_payment(user_email, amount):
+    """결제를 처리하고 관리자에게 알림 메일을 보낸다."""
+    charge_card(user_email, amount)
+    send_notification(ADMIN_EMAIL, f"{user_email} 결제 완료: {amount}원")
+
+
+# --- 3. 함수 이름 오탐 방지 확인용 ---
+# 이름이 20자가 넘지만 숫자가 하나도 없어서 마스킹되면 "안" 됩니다.
+def connect_external_api():
+    """외부 결제 API에 GOOGLE_API_KEY로 인증하여 연결한다."""
+    return requests.get(PAYMENT_API_URL, headers={"x-api-key": GOOGLE_API_KEY})
+
+
+def escalate_to_support(issue):
+    """결제 오류 발생 시 SUPPORT_EMAIL로 이슈를 전달한다."""
+    send_notification(SUPPORT_EMAIL, f"결제 오류 발생: {issue}")
 
 ### NORMAL ###
+# ============================================================
+# [이 블록의 목적] 민감정보가 전혀 없는 평범한 기능 코드입니다.
+# safe-mode 없이 실행해도 원본 그대로 AI에게 전송되어야 합니다.
+# ============================================================
+
 def calculate_total(items):
-    return sum(item.price for item in items)
+    """장바구니 아이템들의 총합을 계산한다."""
+    return sum(item.price * item.quantity for item in items)
 
 
 def format_currency(amount):
+    """숫자를 원화 표기 문자열로 변환한다."""
     return f"{amount:,}원"
+
+
+def apply_discount(total, discount_rate):
+    """할인율을 적용한 최종 금액을 반환한다."""
+    return round(total * (1 - discount_rate))
+
+
+class ShoppingCart:
+    """장바구니 아이템을 관리하는 클래스."""
+
+    def __init__(self):
+        self.items = []
+
+    def add_item(self, item):
+        self.items.append(item)
+
+    def total_price(self):
+        return calculate_total(self.items)
+
+    def total_with_discount(self, discount_rate):
+        return apply_discount(self.total_price(), discount_rate)
