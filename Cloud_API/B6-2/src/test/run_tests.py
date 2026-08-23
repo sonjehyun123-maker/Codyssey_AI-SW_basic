@@ -33,8 +33,12 @@ def run_unit_tests(sensitive_content: str) -> bool:
     results = []
 
     masked = mask_sensitive(sensitive_content)
-    results.append(check("API Key 마스킹", "AIzaSyDaGmWKa4JsXZ" not in masked))
-    results.append(check("다단계 도메인 이메일 완전 마스킹", "anyang.ac.kr" not in masked))
+    results.append(check("Google API Key 마스킹", "AIzaSyDaGmWKa4JsXZ" not in masked))
+    results.append(check("GitHub Token 마스킹", "ghp_1234567890" not in masked))
+    results.append(check("AWS Access Key 마스킹", "AKIAIOSFODNN7EXAMPLE" not in masked))
+    results.append(check("다단계 도메인 이메일(ADMIN_EMAIL) 완전 마스킹", "anyang.ac.kr" not in masked))
+    results.append(check("일반 도메인 이메일(SUPPORT_EMAIL) 완전 마스킹", "codyssey-helper.com" not in masked))
+    results.append(check("설명 주석은 그대로 유지됨", "결제 모듈 환경설정" in masked))
 
     prompt_on = build_commit_prompt("M app.py", sensitive_content, safe_mode=True)
     results.append(check("safe_mode=True시 원본 미노출", "AIzaSyDaGmWKa4JsXZ" not in prompt_on))
@@ -77,8 +81,14 @@ def run_cli_scenario(title: str, change_content: str, extra_args: list[str]):
             f.write(change_content)
 
         diff_result = subprocess.run(["git", "diff"], cwd=scratch, capture_output=True, text=True)
-        print("--- git diff ---")
-        print(diff_result.stdout)
+        original_diff = diff_result.stdout
+        print("--- git diff (원본) ---")
+        print(original_diff)
+
+        if "-safe-mode" in extra_args:
+            masked_diff = mask_sensitive(original_diff)
+            print("--- diff 마스킹 후 (safe-mode 적용, 실제 AI로 전송되는 형태) ---")
+            print(masked_diff)
 
         for cmd in ["commit", "pr"]:
             print(f"--- python3 main.py {cmd} {' '.join(extra_args)} ---".strip())

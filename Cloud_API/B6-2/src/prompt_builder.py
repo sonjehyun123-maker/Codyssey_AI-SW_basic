@@ -1,8 +1,17 @@
 import re
 
 
+_KEY_LIKE_PATTERN = re.compile(r'[A-Za-z0-9_\-]*\d[A-Za-z0-9_\-]*')
+
+
+def _mask_if_key_like(match: re.Match) -> str:
+    token = match.group(0)
+    return '[MASKED_KEY]' if len(token) >= 20 else token
+
+
 def mask_sensitive(diff_text: str) -> str:
-    diff_text = re.sub(r'[A-Za-z0-9_\-]{20,}', '[MASKED_KEY]', diff_text)
+    # 20자 이상 + 숫자 하나 이상 포함된 토큰만 키로 간주 (함수명 등 순수 문자 식별자 오탐 방지)
+    diff_text = _KEY_LIKE_PATTERN.sub(_mask_if_key_like, diff_text)
     diff_text = re.sub(r'[\w.+-]+@[\w.-]+\.\w+', '[MASKED_EMAIL]', diff_text)
     return diff_text
 
