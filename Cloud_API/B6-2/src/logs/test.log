@@ -1,6 +1,10 @@
 ===== 1. 유닛 테스트 (마스킹 / 검증 / 파싱, API 호출 없음) =====
-[PASS] API Key 마스킹
-[PASS] 다단계 도메인 이메일 완전 마스킹
+[PASS] Google API Key 마스킹
+[PASS] GitHub Token 마스킹
+[PASS] AWS Access Key 마스킹
+[PASS] 다단계 도메인 이메일(ADMIN_EMAIL) 완전 마스킹
+[PASS] 일반 도메인 이메일(SUPPORT_EMAIL) 완전 마스킹
+[PASS] 설명 주석은 그대로 유지됨
 [PASS] safe_mode=True시 원본 미노출
 [PASS] safe_mode=False시 원본 그대로 전달
 [PASS] commit 검증: 정상 케이스 통과
@@ -9,37 +13,103 @@
 [PASS] pr 검증: 헤더 누락 실패
 [PASS] pr 파싱: 제목 추출 정확도
 
-유닛 테스트 9/9 통과
+유닛 테스트 13/13 통과
 
 ===== 2. 민감정보 포함 케이스 (safe-mode 사용) =====
---- git diff ---
+--- git diff (원본) ---
 diff --git a/app.py b/app.py
-index 5dfc6e7..984ce7d 100644
+index 5dfc6e7..a047cae 100644
 --- a/app.py
 +++ b/app.py
-@@ -1 +1,8 @@
+@@ -1 +1,33 @@
  # base file
-+API_KEY = "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe"
++# ============================================================
++# [이 블록의 목적] 실제 서비스에 있을 법한 민감정보를 담았습니다.
++# safe-mode를 켜면 아래 값들이 [MASKED_KEY] / [MASKED_EMAIL]로
++# 가려진 채로 AI에게 전송되어야 합니다.
++# ============================================================
++
++# --- 1. API 인증키/토큰 (숫자가 섞여 있어서 마스킹 대상) ---
++GOOGLE_API_KEY = "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe"
 +GITHUB_TOKEN = "ghp_1234567890abcdefghijklmnopqrstuvwx12"
++AWS_ACCESS_KEY_ID = "AKIAIOSFODNN7EXAMPLE1234567890"
++
++# --- 2. 이메일 주소 (이메일 형식이라 마스킹 대상) ---
 +ADMIN_EMAIL = "jaehyun.son@anyang.ac.kr"
++SUPPORT_EMAIL = "support@codyssey-helper.com"
 +
 +
-+def process_payment(user_email):
-+    send_notification(user_email)
++def process_payment(user_email, amount):
++    """결제를 처리하고 관리자에게 알림 메일을 보낸다."""
++    charge_card(user_email, amount)
++    send_notification(ADMIN_EMAIL, f"{user_email} 결제 완료: {amount}원")
++
++
++# --- 3. 함수 이름 오탐 방지 확인용 ---
++# 이름이 20자가 넘지만 숫자가 하나도 없어서 마스킹되면 "안" 됩니다.
++def connect_external_api():
++    """외부 결제 API에 GOOGLE_API_KEY로 인증하여 연결한다."""
++    return requests.get(PAYMENT_API_URL, headers={"x-api-key": GOOGLE_API_KEY})
++
++
++def escalate_to_support(issue):
++    """결제 오류 발생 시 SUPPORT_EMAIL로 이슈를 전달한다."""
++    send_notification(SUPPORT_EMAIL, f"결제 오류 발생: {issue}")
+\ No newline at end of file
+
+--- diff 마스킹 후 (safe-mode 적용, 실제 AI로 전송되는 형태) ---
+diff --git a/app.py b/app.py
+index 5dfc6e7..a047cae 100644
+--- a/app.py
++++ b/app.py
+@@ -1 +1,33 @@
+ # base file
++# ============================================================
++# [이 블록의 목적] 실제 서비스에 있을 법한 민감정보를 담았습니다.
++# safe-mode를 켜면 아래 값들이 [MASKED_KEY] / [MASKED_EMAIL]로
++# 가려진 채로 AI에게 전송되어야 합니다.
++# ============================================================
++
++# --- 1. API 인증키/토큰 (숫자가 섞여 있어서 마스킹 대상) ---
++GOOGLE_API_KEY = "[MASKED_KEY]"
++GITHUB_TOKEN = "[MASKED_KEY]"
++AWS_ACCESS_KEY_ID = "[MASKED_KEY]"
++
++# --- 2. 이메일 주소 (이메일 형식이라 마스킹 대상) ---
++ADMIN_EMAIL = "[MASKED_EMAIL]"
++SUPPORT_EMAIL = "[MASKED_EMAIL]"
++
++
++def process_payment(user_email, amount):
++    """결제를 처리하고 관리자에게 알림 메일을 보낸다."""
++    charge_card(user_email, amount)
++    send_notification(ADMIN_EMAIL, f"{user_email} 결제 완료: {amount}원")
++
++
++# --- 3. 함수 이름 오탐 방지 확인용 ---
++# 이름이 20자가 넘지만 숫자가 하나도 없어서 마스킹되면 "안" 됩니다.
++def connect_external_api():
++    """외부 결제 API에 GOOGLE_API_KEY로 인증하여 연결한다."""
++    return requests.get(PAYMENT_API_URL, headers={"x-api-key": GOOGLE_API_KEY})
++
++
++def escalate_to_support(issue):
++    """결제 오류 발생 시 SUPPORT_EMAIL로 이슈를 전달한다."""
++    send_notification(SUPPORT_EMAIL, f"결제 오류 발생: {issue}")
 \ No newline at end of file
 
 --- python3 main.py commit -safe-mode ---
 [INFO] Git status 수집 완료
-[INFO] Git diff 수집 완료: 14줄
+[INFO] Git diff 수집 완료: 39줄
 [INFO] AI API 요청 중... (시도 1/1)
 [DONE] 커밋 메시지 생성 완료
 --- Commit Message ---
-app.py에 결제 처리 함수 및 API 설정 추가
+app.py에 안전 모드 테스트용 민감 정보 및 함수 추가
 
-app.py 파일에 결제 처리 흐름을 추가하고 필요한 설정 변수들을 정의했습니다.
+app.py 파일에 안전 모드 마스킹 기능 검증을 위한 예시 데이터를 추가했습니다.
 
-- API_KEY, GITHUB_TOKEN, ADMIN_EMAIL 설정 추가
-- 알림 전송을 포함한 process_payment 함수 추가
+- API 키, 토큰, 이메일 등 마스킹 처리 대상 변수 정의
+- 오탐지 검증을 위한 예시 함수 추가
 ----------------------
 
 --- python3 main.py pr -safe-mode ---
@@ -47,45 +117,77 @@ app.py 파일에 결제 처리 흐름을 추가하고 필요한 설정 변수들
 [INFO] AI API 요청 중... (시도 1/1)
 [DONE] PR 초안 생성 완료
 --- PR Title ---
-feat: 결제 처리 기능 및 관리자 설정값 추가
+feat: safe-mode 마스킹 테스트를 위한 민감정보 및 결제 로직 추가
 --- PR Body ---
 ## Why
-- 결제 완료 후 사용자 알림 발송 등 결제 관련 비즈니스 로직의 기초를 마련하고 외부 서비스 연동에 필요한 인증 설정을 구성하기 위함입니다.
+- AI 전송 시 민감정보를 가려주는 safe-mode 기능의 마스킹 및 오탐 방지 성능을 검증하기 위한 테스트 데이터와 시나리오가 필요합니다.
+
 ## What
-- 사용자 이메일을 기반으로 알림을 발송하는 결제 처리 함수 추가
-- API 및 GitHub 인증용 토큰과 관리자 이메일 설정값 정의
+- API 키 및 이메일 주소 등 마스킹 대상이 되는 민감정보 변수 추가
+- 결제 처리 및 에러 에스컬레이션 등 실제 서비스 흐름을 모사한 테스트용 함수 구현
+- 마스킹 오탐지 방지 검증을 위해 숫자가 없고 20자가 넘는 영문 함수 정의
+
 ## How to Test
-- process_payment 함수를 호출하여 내부의 알림 발송 로직이 정상적으로 연계되는지 확인
-- 선언된 환경 변수들이 파일 내에서 에러 없이 참조되는지 확인
+- app.py 파일이 오류 없이 정상적으로 실행되는지 확인합니다.
+- safe-mode 적용 시 API 키와 이메일 변수들이 정상적으로 필터링되는지 검증합니다.
+- connect_external_api 함수가 오탐지로 인해 마스킹되지 않고 정상 유지되는지 확인합니다.
 
 ===== 3. 일반 케이스 (safe-mode 미사용) =====
---- git diff ---
+--- git diff (원본) ---
 diff --git a/app.py b/app.py
-index 5dfc6e7..85d3c3a 100644
+index 5dfc6e7..2bb2f1e 100644
 --- a/app.py
 +++ b/app.py
-@@ -1 +1,7 @@
+@@ -1 +1,35 @@
  # base file
++# ============================================================
++# [이 블록의 목적] 민감정보가 전혀 없는 평범한 기능 코드입니다.
++# safe-mode 없이 실행해도 원본 그대로 AI에게 전송되어야 합니다.
++# ============================================================
++
 +def calculate_total(items):
-+    return sum(item.price for item in items)
++    """장바구니 아이템들의 총합을 계산한다."""
++    return sum(item.price * item.quantity for item in items)
 +
 +
 +def format_currency(amount):
++    """숫자를 원화 표기 문자열로 변환한다."""
 +    return f"{amount:,}원"
++
++
++def apply_discount(total, discount_rate):
++    """할인율을 적용한 최종 금액을 반환한다."""
++    return round(total * (1 - discount_rate))
++
++
++class ShoppingCart:
++    """장바구니 아이템을 관리하는 클래스."""
++
++    def __init__(self):
++        self.items = []
++
++    def add_item(self, item):
++        self.items.append(item)
++
++    def total_price(self):
++        return calculate_total(self.items)
++
++    def total_with_discount(self, discount_rate):
++        return apply_discount(self.total_price(), discount_rate)
 \ No newline at end of file
 
 --- python3 main.py commit  ---
 [INFO] Git status 수집 완료
-[INFO] Git diff 수집 완료: 13줄
+[INFO] Git diff 수집 완료: 41줄
 [INFO] AI API 요청 중... (시도 1/1)
 [DONE] 커밋 메시지 생성 완료
 --- Commit Message ---
-app.py에 금액 계산 및 통화 포맷팅 함수 추가
+app.py에 장바구니 및 금액 계산 기능 추가
 
-app.py 파일에 결제 및 금액 표시 관련 함수를 추가했습니다.
+app.py 파일에 장바구니 기능과 유틸리티 함수를 추가했습니다.
 
-- 아이템 총액을 계산하는 함수 추가
-- 금액을 원화 단위 문자열로 포맷팅하는 함수 추가
+1. 장바구니 상품 추가, 총 금액 계산 및 할인 적용 기능 구현
+2. 금액 원화 표시 및 할인율 계산을 위한 유틸리티 함수 추가
 ----------------------
 
 --- python3 main.py pr  ---
@@ -93,16 +195,14 @@ app.py 파일에 결제 및 금액 표시 관련 함수를 추가했습니다.
 [INFO] AI API 요청 중... (시도 1/1)
 [DONE] PR 초안 생성 완료
 --- PR Title ---
-feat: 상품 총액 계산 및 통화 포맷팅 유틸리티 함수 추가
+feat: 장바구니 금액 계산 및 할인 적용 기능 구현
 --- PR Body ---
 ## Why
-- 서비스 내에서 여러 상품의 총 가격을 계산하고 이를 원화 통화 형식에 맞게 일관되게 화면에 표시하기 위함입니다.
-
+- 장바구니 내 상품들의 총 금액을 계산하고 할인을 적용하는 핵심 비즈니스 로직을 제공하기 위함입니다.
 ## What
-- 상품 리스트를 받아 가격의 합계를 계산하는 calculate_total 함수 추가
-- 숫자형 금액을 천 단위 구분 쉼표와 원화 접미사가 붙은 문자열로 변환하는 format_currency 함수 추가
-
+- 장바구니 상품의 총합 계산, 원화 포맷팅, 할인율 적용을 위한 유틸리티 함수 추가
+- 상품 추가 및 할인 적용 금액 계산 기능을 포함하는 ShoppingCart 클래스 구현
 ## How to Test
-- 가격 필드를 가진 가상의 상품 객체 리스트를 생성하여 calculate_total 함수의 합계가 올바르게 계산되는지 확인합니다.
-- 다양한 범위의 숫자 데이터를 format_currency 함수에 입력하여 천 단위 구분 기호와 원 표시가 정상적으로 출력되는지 확인합니다.
+- ShoppingCart 인스턴스를 생성하고 상품을 추가하여 총 금액이 올바르게 계산되는지 확인
+- 할인율을 적용했을 때 최종 금액이 정상적으로 반올림되어 반환되는지 검증
 
