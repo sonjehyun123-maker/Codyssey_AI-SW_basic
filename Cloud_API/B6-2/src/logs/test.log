@@ -34,12 +34,12 @@ index 5dfc6e7..984ce7d 100644
 [INFO] AI API 요청 중... (시도 1/1)
 [DONE] 커밋 메시지 생성 완료
 --- Commit Message ---
-app.py에 API 키 및 결제 처리 기능 추가
+app.py에 결제 처리 함수 및 API 설정 추가
 
-app.py 파일을 수정하여 서비스 운영에 필요한 설정값을 정의하고 결제 처리 로직을 추가했습니다.
+app.py 파일에 결제 처리 흐름을 추가하고 필요한 설정 변수들을 정의했습니다.
 
 - API_KEY, GITHUB_TOKEN, ADMIN_EMAIL 설정 추가
-- 결제 요청을 처리하고 알림을 전송하는 process_payment 함수 구현
+- 알림 전송을 포함한 process_payment 함수 추가
 ----------------------
 
 --- python3 main.py pr -safe-mode ---
@@ -47,18 +47,16 @@ app.py 파일을 수정하여 서비스 운영에 필요한 설정값을 정의�
 [INFO] AI API 요청 중... (시도 1/1)
 [DONE] PR 초안 생성 완료
 --- PR Title ---
-feat: 결제 처리 기능 추가 및 API 설정값 정의
+feat: 결제 처리 기능 및 관리자 설정값 추가
 --- PR Body ---
 ## Why
-- 결제 서비스를 도입하고 외부 API 연동 및 알림 발송을 위한 기초 환경을 구성하기 위함입니다
-
+- 결제 완료 후 사용자 알림 발송 등 결제 관련 비즈니스 로직의 기초를 마련하고 외부 서비스 연동에 필요한 인증 설정을 구성하기 위함입니다.
 ## What
-- 결제 완료 후 사용자에게 알림을 발송하는 결제 처리 함수 추가
-- 외부 API 연동 및 관리자 소통을 위한 토큰과 이메일 등의 설정값 정의
-
+- 사용자 이메일을 기반으로 알림을 발송하는 결제 처리 함수 추가
+- API 및 GitHub 인증용 토큰과 관리자 이메일 설정값 정의
 ## How to Test
-- app.py 파일이 에러 없이 정상적으로 실행되는지 확인
-- 결제 처리 함수 호출 시 알림 발송 함수가 정상적으로 호출되는지 검증
+- process_payment 함수를 호출하여 내부의 알림 발송 로직이 정상적으로 연계되는지 확인
+- 선언된 환경 변수들이 파일 내에서 에러 없이 참조되는지 확인
 
 ===== 3. 일반 케이스 (safe-mode 미사용) =====
 --- git diff ---
@@ -82,16 +80,29 @@ index 5dfc6e7..85d3c3a 100644
 [INFO] AI API 요청 중... (시도 1/1)
 [DONE] 커밋 메시지 생성 완료
 --- Commit Message ---
-app.py에 합계 계산 및 금액 포맷팅 함수 추가
+app.py에 금액 계산 및 통화 포맷팅 함수 추가
 
-app.py 파일에 금액 합산 및 원화 표기를 위한 함수를 추가했습니다.
+app.py 파일에 결제 및 금액 표시 관련 함수를 추가했습니다.
 
-- calculate_total: 아이템 목록의 총 가격을 계산하는 기능 추가
-- format_currency: 금액을 천 단위 콤마와 원 표시 형식으로 포맷팅하는 기능 추가
+- 아이템 총액을 계산하는 함수 추가
+- 금액을 원화 단위 문자열로 포맷팅하는 함수 추가
 ----------------------
 
 --- python3 main.py pr  ---
 [INFO] 현재 브랜치: master
 [INFO] AI API 요청 중... (시도 1/1)
-[ERROR] API 호출 실패: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent
+[DONE] PR 초안 생성 완료
+--- PR Title ---
+feat: 상품 총액 계산 및 통화 포맷팅 유틸리티 함수 추가
+--- PR Body ---
+## Why
+- 서비스 내에서 여러 상품의 총 가격을 계산하고 이를 원화 통화 형식에 맞게 일관되게 화면에 표시하기 위함입니다.
+
+## What
+- 상품 리스트를 받아 가격의 합계를 계산하는 calculate_total 함수 추가
+- 숫자형 금액을 천 단위 구분 쉼표와 원화 접미사가 붙은 문자열로 변환하는 format_currency 함수 추가
+
+## How to Test
+- 가격 필드를 가진 가상의 상품 객체 리스트를 생성하여 calculate_total 함수의 합계가 올바르게 계산되는지 확인합니다.
+- 다양한 범위의 숫자 데이터를 format_currency 함수에 입력하여 천 단위 구분 기호와 원 표시가 정상적으로 출력되는지 확인합니다.
 
