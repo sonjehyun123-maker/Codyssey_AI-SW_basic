@@ -30,7 +30,7 @@ CRT 터미널(모노톤 인광) 컨셉으로 디자인했습니다.
 
 세 역할을 한 파일에 섞으면(인라인 스타일, 인라인 이벤트) 디자인만 바꾸려 해도 로직을 건드리게 되고 재사용·유지보수가 어려워집니다. 역할별로 분리하면 각자 독립적으로 수정 가능하고, 브라우저가 CSS/JS를 캐싱해서 재방문 시 더 빠르게 로드됩니다.
 
-## Flexbox vs Grid — 차이와 사용처
+## Flexbox vs Grid — 차이와 사용처 (CSS)
 | | Flexbox | Grid |
 |---|---|---|
 | 축 | 1차원 (가로 또는 세로 한 줄) | 2차원 (행+열 동시) |
@@ -39,7 +39,7 @@ CRT 터미널(모노톤 인광) 컨셉으로 디자인했습니다.
 
 Projects 섹션은 GitHub API 응답 개수가 매번 다르고, 화면 너비에 따라 한 줄에 들어가는 카드 수도 달라져야 해서 2차원 배치가 필요한 Grid를 썼습니다. 네비게이션은 로고/메뉴/토글 3개 요소를 가로로 한 줄 배치하기만 하면 돼서 Flex로 충분했습니다.
 
-## querySelector → addEventListener 흐름
+## querySelector → addEventListener 흐름 (JS)
 `addEventListener`는 "이 요소에 이런 이벤트가 발생하면 이 함수를 실행해라"를 등록하는 함수입니다. 순서는 항상 같습니다.
 
 1. `document.querySelector('#id')`로 DOM에서 요소를 하나 찾아 변수에 담는다
@@ -53,7 +53,7 @@ themeToggle.addEventListener('click', () => {                // 2. 이벤트 연
 });
 ```
 
-## 이벤트 → 상태 변경 → DOM 렌더링 흐름
+## 이벤트 → 상태 변경 → DOM 렌더링 흐름 (JS)
 하나의 기능은 항상 3단계로 이어집니다.
 
 1. **이벤트**: 사용자가 뭔가 함 (클릭, 입력, 스크롤...)
@@ -79,7 +79,7 @@ hamburger.addEventListener('click', () => {  // 1. 이벤트
 });
 ```
 
-## fetch + async/await 비동기 처리
+## fetch + async/await 비동기 처리 (JS)
 GitHub API 호출은 응답이 오기까지 시간이 걸리는 비동기 작업입니다. `async/await`로 "응답 올 때까지 기다렸다가 다음 줄 실행"처럼 순차적으로 읽히게 작성했고, 그 사이 상태 변화를 UI로 다음처럼 표현합니다.
 
 | 단계 | STATE.projectsStatus | 화면 |
