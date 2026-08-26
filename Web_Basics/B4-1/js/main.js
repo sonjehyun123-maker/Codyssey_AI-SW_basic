@@ -1,226 +1,233 @@
-// ============================================
-// 1) 다크 모드: 상태 → 전체 화면 스타일 변경 (localStorage 유지)
-// ============================================
-const root = document.documentElement;
-const themeToggle = document.querySelector('#theme-toggle');
-const themeIcon = themeToggle.querySelector('i');
+const GITHUB_USERNAME = 'sonjehyun123-maker';
+const THEME_KEY = 'portfolio-theme';
+const THEME_ORDER = ['green', 'light'];
+const THEME_LABEL = { green: '[ GRN ]', light: '[ PPR ]' };
+const ERROR_MESSAGES = {
+  403: 'ERR_RATE_LIMIT: GitHub API 요청 한도를 초과했습니다.',
+  404: 'ERR_NOT_FOUND: 사용자를 찾을 수 없습니다.',
+};
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const applyTheme = (theme) => {
-  if (theme === 'dark') {
-    root.setAttribute('data-theme', 'dark');
-    themeIcon.classList.remove('fa-moon');
-    themeIcon.classList.add('fa-sun');
-  } else {
-    root.removeAttribute('data-theme');
-    themeIcon.classList.remove('fa-sun');
-    themeIcon.classList.add('fa-moon');
-  }
+// 앱 전역 상태 — 모든 렌더링은 이 객체를 읽어서 수행
+const STATE = {
+  theme: localStorage.getItem(THEME_KEY) || 'green',
+  menuOpen: false,
+  scrolled: false,
+  showScrollTop: false,
+  projectsStatus: 'loading', // loading | success | error | empty
+  projects: [],
+  projectsError: '',
+  formErrors: { name: '', email: '', message: '' },
 };
 
-const savedTheme = localStorage.getItem('theme') ||
-  (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-applyTheme(savedTheme);
+// DOM 요소 선택
+const header = document.querySelector('#siteHeader');
+const hamburger = document.querySelector('#hamburger');
+const navMenu = document.querySelector('#navMenu');
+const themeToggle = document.querySelector('#themeToggle');
+const scrollTopBtn = document.querySelector('#scrollTop');
+const avatarImg = document.querySelector('#avatarImg');
+const projectsContainer = document.querySelector('#projectsContainer');
+const form = document.querySelector('#contactForm');
 
-themeToggle.addEventListener('click', () => {
-  const isDark = root.getAttribute('data-theme') === 'dark';
-  const next = isDark ? 'light' : 'dark';
-  applyTheme(next);
-  localStorage.setItem('theme', next);
+avatarImg.addEventListener('error', () => {
+  avatarImg.src = 'https://placehold.co/480x480/14171C/E7EAEE?text=Jaehyun';
+}, { once: true });
+
+// 렌더 함수들: STATE를 읽어서 DOM에 반영만 함
+
+const renderTheme = () => {
+  if (STATE.theme === 'green') {
+    document.documentElement.removeAttribute('data-theme');
+  } else {
+    document.documentElement.setAttribute('data-theme', STATE.theme);
+  }
+  themeToggle.textContent = THEME_LABEL[STATE.theme];
+  themeToggle.setAttribute('aria-label', `테마 전환 (현재: ${STATE.theme})`);
+};
+
+const renderMenu = () => {
+  navMenu.classList.toggle('active', STATE.menuOpen);
+  hamburger.classList.toggle('active', STATE.menuOpen);
+  hamburger.setAttribute('aria-expanded', String(STATE.menuOpen));
+};
+
+const renderHeader = () => {
+  header.classList.toggle('scrolled', STATE.scrolled);
+  scrollTopBtn.classList.toggle('visible', STATE.showScrollTop);
+};
+
+const renderFormErrors = () => {
+  Object.entries(STATE.formErrors).forEach(([fieldId, message]) => {
+    document.querySelector(`#${fieldId}Error`).textContent = message;
+  });
+};
+
+const renderProjectCard = ({ name, description, html_url, stargazers_count, language }) => `
+  <article class="project-card">
+    <h3>&gt; ${name}</h3>
+    <p>${description ?? '설명이 등록되지 않은 저장소입니다.'}</p>
+    <div class="project-meta">
+      <span>★ ${stargazers_count}</span>
+      <span>${language ?? 'N/A'}</span>
+      <a href="${html_url}" target="_blank" rel="noopener">open →</a>
+    </div>
+  </article>
+`;
+
+const renderProjects = () => {
+  if (STATE.projectsStatus === 'loading') {
+    projectsContainer.innerHTML = '<div class="state-box"><span class="blink-cursor">로딩 중</span></div>';
+    return;
+  }
+  if (STATE.projectsStatus === 'error') {
+    projectsContainer.innerHTML = `
+      <div class="state-box error">
+        프로젝트를 불러올 수 없습니다. (${STATE.projectsError})
+        <br><button class="btn retry-btn" id="retryBtn">[ retry ]</button>
+      </div>
+    `;
+    document.querySelector('#retryBtn').addEventListener('click', loadProjects);
+    return;
+  }
+  if (STATE.projectsStatus === 'empty') {
+    projectsContainer.innerHTML = '<div class="state-box">표시할 프로젝트가 없습니다.</div>';
+    return;
+  }
+  const cards = STATE.projects.map(renderProjectCard).join('');
+  projectsContainer.innerHTML = `<div class="projects-grid">${cards}</div>`;
+};
+
+// 이벤트: 스크롤 → STATE.scrolled / showScrollTop 갱신 → renderHeader
+const handleScroll = () => {
+  const y = window.scrollY;
+  STATE.scrolled = y > 60;
+  STATE.showScrollTop = y > 300;
+  renderHeader();
+};
+window.addEventListener('scroll', handleScroll);
+handleScroll();
+
+// 이벤트: 햄버거 클릭 → STATE.menuOpen 토글 → renderMenu
+hamburger.addEventListener('click', () => {
+  STATE.menuOpen = !STATE.menuOpen;
+  renderMenu();
 });
 
-// ============================================
-// 2) 햄버거 메뉴 토글
-// ============================================
-const burger = document.querySelector('#burger');
-const navMenu = document.querySelector('#nav-menu');
-
-burger.addEventListener('click', () => {
-  const isActive = navMenu.classList.toggle('active');
-  burger.classList.toggle('active', isActive);
-  burger.setAttribute('aria-expanded', String(isActive));
-});
-
-document.querySelectorAll('.nav__link').forEach((link) => {
-  link.addEventListener('click', () => {
-    navMenu.classList.remove('active');
-    burger.classList.remove('active');
-    burger.setAttribute('aria-expanded', 'false');
+navMenu.querySelectorAll('a').forEach((link) => {
+  link.addEventListener('click', (event) => {
+    const target = document.querySelector(link.getAttribute('href'));
+    if (!target) return;
+    event.preventDefault();
+    target.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+    STATE.menuOpen = false;
+    renderMenu();
   });
 });
 
-// ============================================
-// 3) 스크롤 이벤트: 헤더 배경 변경 + 스크롤 탑 버튼 표시
-// ============================================
-const header = document.querySelector('#site-header');
-const scrollTopBtn = document.querySelector('#scroll-top');
-
-const NAV_SCROLL_THRESHOLD = 60;
-const SCROLL_TOP_THRESHOLD = 300;
-
-window.addEventListener('scroll', () => {
-  const y = window.scrollY;
-  header.classList.toggle('scrolled', y > NAV_SCROLL_THRESHOLD);
-  scrollTopBtn.classList.toggle('visible', y > SCROLL_TOP_THRESHOLD);
-});
-
 scrollTopBtn.addEventListener('click', () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
 });
 
-// ============================================
-// 4) 스크롤 애니메이션 (Intersection Observer)
-// ============================================
-const REVEAL_THRESHOLD = 0.2;
+// 이벤트: 테마 토글 클릭 → STATE.theme 순환(그린→라이트) → renderTheme
+renderTheme();
+themeToggle.addEventListener('click', () => {
+  STATE.theme = THEME_ORDER[(THEME_ORDER.indexOf(STATE.theme) + 1) % THEME_ORDER.length];
+  localStorage.setItem(THEME_KEY, STATE.theme);
+  renderTheme();
+});
 
+// 스크롤 애니메이션: threshold 0.2
 const revealObserver = new IntersectionObserver(
   (entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
-        entry.target.classList.add('is-visible');
+        entry.target.classList.add('visible');
         revealObserver.unobserve(entry.target);
       }
     });
   },
-  { threshold: REVEAL_THRESHOLD }
+  { threshold: 0.2 }
 );
-
 document.querySelectorAll('.reveal').forEach((el) => revealObserver.observe(el));
 
-// ============================================
-// 5) 폼 유효성 검사: 입력 → 상태 변경 → 에러 메시지 표시/숨김
-// ============================================
-const form = document.querySelector('#contact-form');
-const successMsg = document.querySelector('#form-success');
+// 부팅 로그 타이핑 효과
+const bootLines = [
+  '> status: [ONLINE] building things that work_',
+];
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-const setFieldError = (fieldId, message) => {
-  const field = document.querySelector(`#${fieldId}`);
-  const errorEl = document.querySelector(`#${fieldId}-error`);
-  const wrapper = field.closest('.form-field');
-
-  wrapper.classList.toggle('invalid', Boolean(message));
-  errorEl.textContent = message || '';
+const typeBootLog = async () => {
+  const el = document.querySelector('#bootLog');
+  if (prefersReducedMotion) {
+    el.innerHTML = bootLines.map((line) => `<span class="done">${line}</span>`).join('<br>');
+    return;
+  }
+  for (const line of bootLines) {
+    let shown = '';
+    for (const char of line) {
+      shown += char;
+      el.innerHTML = shown;
+      await new Promise((resolve) => setTimeout(resolve, 18));
+    }
+    el.innerHTML += '<br>';
+  }
 };
+typeBootLog();
 
-const validateField = (fieldId) => {
-  const field = document.querySelector(`#${fieldId}`);
-  const value = field.value.trim();
+// 이벤트: GitHub API 호출 → STATE.projectsStatus/projects 갱신 → renderProjects
+const loadProjects = async () => {
+  STATE.projectsStatus = 'loading';
+  renderProjects();
+  try {
+    const response = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=6`);
+    if (!response.ok) throw new Error(ERROR_MESSAGES[response.status] ?? `ERR_HTTP_${response.status}`);
+    const repos = await response.json();
+    const nonForkRepos = repos.filter(({ fork }) => !fork);
+    if (nonForkRepos.length === 0) {
+      STATE.projectsStatus = 'empty';
+    } else {
+      STATE.projects = nonForkRepos;
+      STATE.projectsStatus = 'success';
+    }
+  } catch (error) {
+    STATE.projectsStatus = 'error';
+    STATE.projectsError = error instanceof TypeError ? 'ERR_NETWORK: 네트워크 연결을 확인해주세요.' : error.message;
+  }
+  renderProjects();
+};
+loadProjects();
 
-  if (!value) {
-    setFieldError(fieldId, '필수 입력 항목입니다.');
-    return false;
+// 이벤트: 폼 입력/제출 → STATE.formErrors 갱신 → renderFormErrors
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const validateField = (fieldId, value) => {
+  if (!value.trim()) {
+    STATE.formErrors[fieldId] = '# error: 필수 입력 항목입니다.';
+  } else if (fieldId === 'email' && !emailPattern.test(value)) {
+    STATE.formErrors[fieldId] = '# error: 이메일 형식이 올바르지 않습니다.';
+  } else {
+    STATE.formErrors[fieldId] = '';
   }
-  if (fieldId === 'email' && !EMAIL_REGEX.test(value)) {
-    setFieldError(fieldId, '올바른 이메일 형식이 아닙니다.');
-    return false;
-  }
-  setFieldError(fieldId, '');
-  return true;
+  renderFormErrors();
+  return STATE.formErrors[fieldId] === '';
 };
 
 ['name', 'email', 'message'].forEach((fieldId) => {
   const field = document.querySelector(`#${fieldId}`);
-  field.addEventListener('input', () => validateField(fieldId));
+  field.addEventListener('input', () => validateField(fieldId, field.value));
 });
 
 form.addEventListener('submit', (event) => {
   event.preventDefault();
-
-  const results = ['name', 'email', 'message'].map(validateField);
-  const isValid = results.every(Boolean);
-
-  if (!isValid) {
-    successMsg.textContent = '';
-    return;
-  }
-
-  successMsg.textContent = '메시지가 성공적으로 전송되었습니다. 빠르게 답변드릴게요!';
-  form.reset();
-  ['name', 'email', 'message'].forEach((fieldId) => setFieldError(fieldId, ''));
+  const { name, email, message } = Object.fromEntries(new FormData(form));
+  const results = [
+    validateField('name', name),
+    validateField('email', email),
+    validateField('message', message),
+  ];
+  const successEl = document.querySelector('#formSuccess');
+  successEl.textContent = results.every(Boolean)
+    ? `> message_sent.log ✓  ${name}님, 메시지가 준비됐습니다.`
+    : '';
+  if (results.every(Boolean)) form.reset();
 });
-
-// ============================================
-// 6) GitHub API 연동: 호출 → 로딩/성공/에러 상태 → Projects 렌더링
-// ============================================
-const GITHUB_USERNAME = 'sonjehyun123-maker';
-const statusEl = document.querySelector('#projects-status');
-const gridEl = document.querySelector('#projects-grid');
-
-const escapeHtml = (str = '') =>
-  str.replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
-
-const renderLoading = () => {
-  statusEl.className = 'projects__status';
-  statusEl.innerHTML = `<span class="spinner"></span>로딩 중...`;
-  gridEl.innerHTML = '';
-};
-
-const renderError = () => {
-  statusEl.className = 'projects__status error';
-  statusEl.innerHTML = `프로젝트를 불러올 수 없습니다. <button class="retry-btn" id="retry-btn">다시 시도</button>`;
-  gridEl.innerHTML = '';
-  document.querySelector('#retry-btn').addEventListener('click', loadProjects);
-};
-
-const renderEmpty = () => {
-  statusEl.className = 'projects__status';
-  statusEl.textContent = '표시할 프로젝트가 없습니다.';
-  gridEl.innerHTML = '';
-};
-
-const renderProjects = (repos) => {
-  statusEl.className = 'projects__status';
-  statusEl.textContent = '';
-
-  const cards = repos
-    .map(({ name, description, html_url, language, stargazers_count }) => `
-      <article class="project-card">
-        <div class="project-card__bar">
-          <span class="dot dot--red"></span>
-          <span class="dot dot--yellow"></span>
-          <span class="dot dot--green"></span>
-        </div>
-        <div class="project-card__body">
-          <h3 class="project-card__name">${escapeHtml(name)}</h3>
-          <p class="project-card__desc">${escapeHtml(description || '설명이 등록되지 않은 저장소입니다.')}</p>
-          <div class="project-card__meta">
-            <span><i class="fa-solid fa-code"></i>${escapeHtml(language || '—')}</span>
-            <span><i class="fa-solid fa-star"></i>${stargazers_count}</span>
-          </div>
-          <a class="project-card__link" href="${html_url}" target="_blank" rel="noopener">
-            저장소 보기 <i class="fa-solid fa-arrow-up-right-from-square"></i>
-          </a>
-        </div>
-      </article>
-    `)
-    .join('');
-
-  gridEl.innerHTML = cards;
-};
-
-async function loadProjects() {
-  renderLoading();
-
-  try {
-    const response = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=9`);
-
-    if (!response.ok) {
-      throw new Error(`GitHub API error: ${response.status}`);
-    }
-
-    const repos = await response.json();
-
-    if (!Array.isArray(repos) || repos.length === 0) {
-      renderEmpty();
-      return;
-    }
-
-    renderProjects(repos);
-  } catch (error) {
-    console.error(error);
-    renderError();
-  }
-}
-
-loadProjects();
