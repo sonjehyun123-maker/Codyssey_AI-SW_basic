@@ -113,6 +113,42 @@ const loadProjects = async () => {
 4. GitHub API 호출 → `STATE.projectsStatus` / `projects` 변경 → `renderProjects()`
 5. 폼 입력/제출 → `STATE.formErrors` 변경 → `renderFormErrors()`
 
+## onclick vs addEventListener
+
+### 요약
+`onclick`은 값을 담는 상자가 1개라 새로 넣으면 이전 값이 지워진다.
+`addEventListener`는 리스트에 계속 추가되는 방식이라 여러 개가 동시에 실행된다.
+
+### 비교
+
+| 항목 | onclick (인라인) | addEventListener |
+|---|---|---|
+| 여러 개 동시 등록 |  덮어씀 | 가능 |
+| HTML/JS 분리 |  HTML에 JS 섞임 |  완전 분리 |
+| 이벤트 제거 | 사실상 불가능 | removeEventListener 가능 |
+| 옵션 제어 (once, capture 등) | 불가능 | 가능 |
+| 지원 이벤트 범위 | 클릭류 일부 | scroll, input, error 등 거의 전부 |
+
+### 코드 비교
+
+```js
+// onclick — 상자 1개, 마지막 값만 남음
+btn.onclick = a;
+btn.onclick = b; // a는 사라짐, b만 실행됨
+
+// addEventListener — 리스트에 쌓임
+btn.addEventListener('click', a);
+btn.addEventListener('click', b); // a, b 둘 다 실행됨
+```
+
+### 왜 addEventListener가 유리한가
+- 서로 다른 코드가 같은 요소에 각자 이벤트를 걸어도 기존 로직을 안 건드림
+- `{ once: true }` 같은 옵션으로 세밀한 제어 가능
+- HTML과 로직이 분리되어 유지보수가 쉬움
+
+### onclick이 이기는 유일한 지점
+빠르게 한 줄 테스트할 때의 속도. 실전 프로젝트에서는 잃는 게 더 커서 잘 안 씀.
+
 ## 주요 기준값
 - 스크롤 300px 이상 → 맨 위로 버튼 노출
 - 스크롤 60px 이상 → 네비게이션 배경 전환
