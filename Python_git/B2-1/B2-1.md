@@ -1,0 +1,100 @@
+# 콘솔 가계부 (budget_app)
+
+## 실행 방법
+
+```bash
+cd budget_app  # 이 README가 있는 폴더 (budget_app 패키지의 상위 폴더)
+python3 -m budget_app --help
+```
+
+모든 서브커맨드는 `--help`로 사용법을 확인할 수 있습니다.
+데이터 폴더를 바꾸려면 `--data-dir` 옵션을 커맨드 앞에 붙입니다.
+
+```bash
+python3 -m budget_app --data-dir ./mydata add
+```
+
+## 저장 파일 위치 / 형식
+
+기본 저장 폴더: `./data` (최초 실행 시 자동 생성)
+
+| 파일 | 형식 | 내용 |
+| --- | --- | --- |
+| `data/transactions.jsonl` | JSONL | 거래 내역 (한 줄 = 한 레코드) |
+| `data/categories.jsonl` | JSONL | 카테고리 목록 (최초 실행 시 food/transport/rent/etc 자동 생성) |
+| `data/budgets.jsonl` | JSONL | 월별 예산 |
+
+거래 수정/삭제/카테고리 삭제 시 임시 파일(`.tmp`)에 먼저 쓰고 `os.replace()`로
+원본과 교체하는 방식으로 저장하여, 도중에 프로그램이 죽어도 원본 파일이 깨지지 않습니다.
+
+## 주요 명령 예시
+
+```bash
+# 거래 추가 (대화형)
+python3 -m budget_app add
+
+# 목록 조회 (최신순, 최근 3건)
+python3 -m budget_app list --limit 3
+
+# 검색
+python3 -m budget_app search --type expense --from 2024-01-01 --to 2024-01-31 --category food
+
+# 월별 요약
+python3 -m budget_app summary --month 2024-01 --top 3
+
+# 예산 설정
+python3 -m budget_app budget set --month 2024-01 --amount 500000
+
+# 카테고리 관리
+python3 -m budget_app category add        # 대화형
+python3 -m budget_app category list
+python3 -m budget_app category remove --name food --replace-with etc
+
+# 수정 / 삭제
+python3 -m budget_app update --id TX-000001 --amount 18000 --memo "점심(수정)"
+python3 -m budget_app delete --id TX-000001
+
+# CSV 내보내기 / 가져오기
+python3 -m budget_app export --out export.csv --month 2024-01
+python3 -m budget_app import --from export.csv
+```
+
+## update 방식 (고정)
+
+`update`는 **옵션 기반**으로 고정했습니다.
+
+```
+update --id <id> [--date] [--type] [--category] [--amount] [--memo] [--tags]
+```
+
+전달한 옵션만 수정되고, 나머지 필드는 기존 값을 유지합니다.
+
+## import/export CSV 스키마
+
+| column | required | 설명 |
+| --- | --- | --- |
+| date | Y | YYYY-MM-DD |
+| type | Y | income / expense |
+| category | Y | 등록된 카테고리 |
+| amount | Y | 양수 정수 |
+| memo | N | 문자열 |
+| tags | N | 쉼표(,) 구분 문자열 |
+
+공통: UTF-8, 헤더 포함. `import`는 행 단위로 검증하며, 유효하지 않은 행은
+건너뛰고 (`skipped` 카운트) 나머지는 정상 등록합니다.
+
+## 구조
+
+```
+budget_app/
+  models.py       모델 계층 - Transaction dataclass
+  storage.py       저장소 계층 - JSONL 파일 I/O, 제너레이터 스트리밍, 원자적 교체
+  service.py        서비스 계층 - 검증, CRUD, 검색, 요약, import/export
+  decorators.py   공통 관심사 - 예외처리(handle_errors)/로그(log_execution)/시간측정(measure_time)
+  cli.py               CLI 계층 - argparse 서브커맨드, 대화형 입력, 출력 포맷
+  __main__.py    진입점 (python -m budget_app)
+```
+
+## 종료 코드
+
+정상 종료: 0 / 오류 종료: 1 (원인 + 힌트를 출력하고 스택트레이스는 노출하지 않음)
