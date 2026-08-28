@@ -9,7 +9,7 @@
 | 대주제 | 미션 및 프로젝트 명 |
 | :--- | :--- |
 | **Linux와 OS** | • [시스템 관제 자동화 스크립트](./Linux_OS/B1-1.md)<br>• [리눅스 프로세스 및 시스템 프로그래밍](./Linux_OS/B1-2.md) |
-| **Python과 Git 심화** | • 파일 기반 가계부 콘솔 프로그램 구현 <br>• 실전 Git 협업 워크플로우 마스터 |
+| **Python과 Git 심화** | • [파일 기반 가계부 콘솔 프로그램 구현](./Python_git/B2-1/B2-1.md) <br>• 실전 Git 협업 워크플로우 마스터 |
 | **자료구조와 알고리즘** | • [Mini Redis 구축](./Data_Structures/B3-1/B3-1.md)<br>• [Mini Git 구축](./Data_Structures/B3-2/B3-2.md) |
 | **웹 기초와 프론트엔드** | • [웹 기초 완성, 나만의 포트폴리오 사이트](./Web_Basics/B4-1.md)<br>• React 핵심 개념 마스터 |
 | **데이터베이스와 백엔드** | • [SQL로 만드는 나만의 데이터베이스 설계](./DB_Backend/B5-1.md)<br>• FastAPI 기반 CRUD API 개발<br>• 인증과 연관관계로 완성하는 백엔드 심화 |
