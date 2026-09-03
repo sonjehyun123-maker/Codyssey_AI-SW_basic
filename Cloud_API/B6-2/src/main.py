@@ -13,14 +13,42 @@ from formatter import (
 
 
 def build_parser():
-    parser = argparse.ArgumentParser(prog="main.py")
+    parser = argparse.ArgumentParser(
+        prog="main.py",
+        add_help=False
+    )
+
+    parser.add_argument(
+        "-h", "--help", "-help",
+        action="help",
+        help="사용법을 출력합니다."
+    )
+
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     common = argparse.ArgumentParser(add_help=False)
-    common.add_argument("-model", default="gemini-3.5-flash")
-    common.add_argument("-temperature", type=float, default=0.7)
-    common.add_argument("-max-tokens", type=int, default=5120, dest="max_tokens")
-    common.add_argument("-safe-mode", action="store_true", dest="safe_mode")
+    common.add_argument(
+        "-m", "--model",
+        dest="model",
+        default="gemini-3.5-flash"
+    )
+    common.add_argument(
+        "-t", "--temperature",
+        dest="temperature",
+        type=float,
+        default=0.7
+    )
+    common.add_argument(
+        "-mt", "--max-tokens",
+        dest="max_tokens",
+        type=int,
+        default=5120
+    )
+    common.add_argument(
+        "-s", "--safe-mode",
+        dest="safe_mode",
+        action="store_true"
+    )
 
     subparsers.add_parser("commit", parents=[common])
     subparsers.add_parser("pr", parents=[common])
