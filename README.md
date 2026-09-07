@@ -1,17 +1,85 @@
 # Codyssey_AI-SW_basic
 
-## AI/SW 기초 (AI/SW Basic) 교육 과정 로드맵
+> **운영체제 → 자료구조 → 웹 → 데이터베이스 → 클라우드/AI까지, 소프트웨어의 핵심 원리를 직접 구현하며 학습한 기록입니다.**
 
-> **"운영체제, 자료구조, 웹, 데이터베이스, 클라우드까지! 소프트웨어를 이루는 핵심 기술을 직접 구현하며 익히는 단계입니다."**
-> 단과식 학습을 지양하고 하나의 서비스를 만들어가는 과정에서 각 기술을 자연스럽게 연결하며, 서비스의 전체 구조를 이해하고 프로그램을 개발할 수 있는 주니어 개발자로 성장하는 것을 목표로 합니다.
+각 기술을 개별적으로 학습하는 데 그치지 않고, 작은 시스템과 서비스를 직접 구현하며 **기술 간 연결과 내부 동작을 이해하는 것**을 목표로 합니다.
 
-## 학습 로드맵
-| 대주제 | 미션 및 프로젝트 명 |
-| :--- | :--- |
-| **Linux와 OS** | • [시스템 관제 자동화 스크립트](./Linux_OS/B1-1.md)<br>• [리눅스 프로세스 및 시스템 프로그래밍](./Linux_OS/B1-2.md) |
-| **Python과 Git 심화** | • [파일 기반 가계부 콘솔 프로그램 구현](./Python_git/B2-1/B2-1.md) <br>• 실전 Git 협업 워크플로우 마스터 |
-| **자료구조와 알고리즘** | • [Mini Redis 구축](./Data_Structures/B3-1/B3-1.md)<br>• [Mini Git 구축](./Data_Structures/B3-2/B3-2.md) |
-| **웹 기초와 프론트엔드** | • [웹 기초 완성, 나만의 포트폴리오 사이트](./Web_Basics/B4-1.md)<br>• React 핵심 개념 마스터 |
-| **데이터베이스와 백엔드** | • [SQL로 만드는 나만의 데이터베이스 설계](./DB_Backend/B5-1.md)<br>• FastAPI 기반 CRUD API 개발<br>• 인증과 연관관계로 완성하는 백엔드 심화 |
-| **클라우드와 AI API** | • [클라우드 환경에서 웹 서비스 배포 및 운영](./Cloud_API/6-1/6-1.md)<br>• [AI 기반 Git 커밋 & PR 자동화 봇 제작](./Cloud_API/B6-2/6-2.md) |
-| **AI/SW 기초 Term Project** | • [웹 기반 AI 챗봇 서비스 구축 (기본 기능)](./Term_Project/7-1.md)<br>• 웹 기반 AI 챗봇 서비스 고도화 (심화 기능) |
+---
+
+## 소개
+
+Python, C, C++을 기반으로 자료구조와 시스템 프로그래밍을 직접 구현하며 학습하고 있습니다.
+
+이 저장소는 **"무엇을 공부했는가"보다 "직접 만들면서 무엇을 이해하게 되었는가"**를 보여주는 데 초점을 맞춥니다.
+
+---
+
+## Featured Projects
+
+기술적으로 가장 의미 있었던 프로젝트입니다.
+
+| 프로젝트                                                  | 설명                                      | 핵심 기술                          |
+| ----------------------------------------------------- | --------------------------------------- | ------------------------------ |
+| **[Mini Redis](Data_Structures/B3-1/README.md)**      | 자료구조를 직접 구현한 메모리 저장소                    | HashMap · LRU · Min Heap · TTL |
+| **[Mini Git](Data_Structures/B3-2/README.md)**        | Git의 Commit 구조와 그래프를 직접 구현              | DAG · Hash · BFS · Sorting     |
+| **[Linux System Monitoring Agent](Linux_OS/B1-1.md)** | Linux 시스템 자원을 모니터링하는 관제 프로그램            | Linux · Process · Shell        |
+| **[Git AI Helper](Cloud_API/B6-2/README.md)**         | Git 변경사항을 분석해 AI Commit/PR을 생성하는 CLI 도구 | LLM API · Validation · Retry   |
+
+> 각 프로젝트를 클릭하면 구현 과정과 기술적 내용을 확인할 수 있습니다.
+
+---
+
+## 핵심 기술
+
+| 분야                  | 기술                                                    |
+| ------------------- | ----------------------------------------------------- |
+| **Systems**         | Linux · Process · Resource Monitoring · Git Internals |
+| **Data Structures** | HashMap · Linked List · Heap · Graph · LRU · TTL      |
+| **Web / Backend**   | HTML · CSS · JavaScript · React · SQL · FastAPI       |
+| **AI**              | LLM API · Prompt Engineering · AI Developer Tool      |
+
+---
+
+## 학습 방식
+
+* **직접 구현** — 핵심 자료구조와 시스템 동작을 가능한 한 직접 구현
+* **이론과 구현 연결** — 자료구조와 알고리즘의 원리를 코드로 확인
+* **트러블슈팅과 재설계** — 문제의 원인을 분석하고 필요하면 기존 설계를 개선
+
+---
+
+## Learning Roadmap
+
+| Stage  | Focus                        | Projects / Topics                                                                         |
+| ------ | ---------------------------- | ----------------------------------------------------------------------------------------- |
+| **B1** | Linux & OS                   | [시스템 관제](Linux_OS/B1-1.md) · [시스템 프로그래밍](Linux_OS/B1-2.md)                                |
+| **B2** | Python & Git                 | [Python 콘솔 프로그램](Python_git/B2-1/B2-1.md) · Git Workflow                                  |
+| **B3** | Data Structures & Algorithms | [Mini Redis](Data_Structures/B3-1/README.md) · [Mini Git](Data_Structures/B3-2/README.md) |
+| **B4** | Web                          | [Portfolio Website](Web_Basics/B4-1.md) · React                                           |
+| **B5** | Database & Backend           | [SQL Database](DB_Backend/B5-1.md) · FastAPI · CRUD · Authentication                      |
+| **B6** | Cloud & AI                   | [Cloud Deployment](Cloud_API/B6-1/6-1.md) · [Git AI Helper](Cloud_API/B6-2/README.md)     |
+| **B7** | Term Project                 | [AI Chatbot Service](Term_Project/B7-1.md)                                                |
+
+---
+
+## Repository Structure
+
+```text id="z7x8p2"
+Codyssey_AI-SW_basic/
+│
+├── Linux_OS/          # Linux, 프로세스/시스템 프로그래밍
+├── Python_git/        # Python, Git
+├── Data_Structures/   # Mini Redis, Mini Git
+├── Web_Basics/        # Web, React
+├── DB_Backend/        # SQL, FastAPI
+├── Cloud_API/         # Cloud, AI API
+└── Term_Project/      # AI 챗봇 서비스
+```
+
+---
+
+## About
+
+**기초 CS 지식을 직접 구현하고, 그 결과를 실제 소프트웨어 개발로 연결하는 과정**을 기록하고 있습니다.
+
+각 프로젝트의 자세한 설계와 구현 내용은 프로젝트별 README에서 확인할 수 있습니다.
