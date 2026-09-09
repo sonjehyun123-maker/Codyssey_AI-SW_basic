@@ -1,0 +1,290 @@
+===== Q1 =====
+[설명] Q1. 대여 가능한(is_available=TRUE) 책을 출간연도 최신순으로 5권 조회
+[SQL]
+SELECT title, published_year
+FROM book
+WHERE is_available = TRUE
+ORDER BY published_year DESC
+LIMIT 5;
+[결과]
+title        | published_year 
+---------------------+----------------
+ 작별인사            |           2022
+ 빛의 과거           |           2019
+ 아주 작은 습관의 힘 |           2019
+ 클린 아키텍처       |           2019
+ 본헤드              |           2018
+(5 rows)
+
+===== Q2 =====
+[설명] Q2. 이메일이 example.com 도메인인 회원 조회
+[SQL]
+SELECT member_name, email
+FROM member
+WHERE email LIKE '%@example.com';
+[결과]
+member_name |        email        
+-------------+---------------------
+ 김재현      | jaehyun@example.com
+ 이수민      | sumin@example.com
+ 박도윤      | doyoon@example.com
+ 최지우      | jiwoo@example.com
+ 정하은      | haeun@example.com
+ 강민준      | minjun@example.com
+ 윤서아      | seoa@example.com
+ 임현우      | hyunwoo@example.com
+ 한소율      | soyul@example.com
+ 오태양      | taeyang@example.com
+ 배유진      | yujin@example.com
+ 신은우      | eunwoo@example.com
+(12 rows)
+
+===== Q3 =====
+[설명] Q3. 2026년 7월에 발생한 대여 기록만 조회
+[SQL]
+SELECT rental_id, member_id, book_id, rental_date, status
+FROM rental
+WHERE rental_date BETWEEN '2026-07-01' AND '2026-07-31'
+ORDER BY rental_date;
+[결과]
+rental_id | member_id | book_id | rental_date |  status  
+-----------+-----------+---------+-------------+----------
+         8 |         6 |       2 | 2026-07-01  | RENTED
+        12 |         1 |      12 | 2026-07-05  | RENTED
+        13 |         2 |      10 | 2026-07-06  | RENTED
+        14 |         4 |       7 | 2026-07-07  | RETURNED
+        15 |         5 |       3 | 2026-07-08  | RENTED
+(5 rows)
+
+===== Q4 =====
+[설명] Q4. 아직 반납되지 않은(RENTED) 대여 목록을 반납예정일 순으로 조회
+[SQL]
+SELECT rental_id, member_id, book_id, due_date, status
+FROM rental
+WHERE status = 'RENTED'
+ORDER BY due_date;
+[결과]
+rental_id | member_id | book_id |  due_date  | status 
+-----------+-----------+---------+------------+--------
+         6 |         5 |       5 | 2026-06-19 | RENTED
+        10 |         8 |       6 | 2026-06-22 | RENTED
+         2 |         1 |       7 | 2026-07-04 | RENTED
+         8 |         6 |       2 | 2026-07-15 | RENTED
+        12 |         1 |      12 | 2026-07-19 | RENTED
+        13 |         2 |      10 | 2026-07-20 | RENTED
+        15 |         5 |       3 | 2026-07-22 | RENTED
+(7 rows)
+
+===== Q5 =====
+[설명] Q5. (INNER JOIN) 회원명과 함께 대여 내역 조회
+[SQL]
+SELECT r.rental_id, m.member_name, r.rental_date, r.status
+FROM rental r
+INNER JOIN member m ON r.member_id = m.member_id
+ORDER BY r.rental_date;
+[결과]
+rental_id | member_name | rental_date |  status  
+-----------+-------------+-------------+----------
+         4 | 박도윤      | 2026-05-01  | RETURNED
+         5 | 최지우      | 2026-06-04  | RETURNED
+         6 | 정하은      | 2026-06-05  | RENTED
+         7 | 강민준      | 2026-06-06  | RETURNED
+         9 | 윤서아      | 2026-06-07  | RETURNED
+        10 | 임현우      | 2026-06-08  | RENTED
+        11 | 한소율      | 2026-06-09  | RETURNED
+         2 | 김재현      | 2026-06-20  | RENTED
+         8 | 강민준      | 2026-07-01  | RENTED
+        12 | 김재현      | 2026-07-05  | RENTED
+        13 | 이수민      | 2026-07-06  | RENTED
+        14 | 최지우      | 2026-07-07  | RETURNED
+        15 | 정하은      | 2026-07-08  | RENTED
+(13 rows)
+
+===== Q6 =====
+[설명] Q6. (INNER JOIN, 3-way) 대여별 회원명 + 책 제목 상세 조회
+[SQL]
+SELECT r.rental_id, m.member_name, b.title, r.rental_date, r.due_date
+FROM rental r
+INNER JOIN member m ON r.member_id = m.member_id
+INNER JOIN book b ON r.book_id = b.book_id
+ORDER BY r.rental_id;
+[결과]
+rental_id | member_name |      title      | rental_date |  due_date  
+-----------+-------------+-----------------+-------------+------------
+         2 | 김재현      | 클린 코드       | 2026-06-20  | 2026-07-04
+         4 | 박도윤      | 호모 데우스     | 2026-05-01  | 2026-05-15
+         5 | 최지우      | 살인자의 기억법 | 2026-06-04  | 2026-06-18
+         6 | 정하은      | 노르웨이의 숲   | 2026-06-05  | 2026-06-19
+         7 | 강민준      | 클린 아키텍처   | 2026-06-06  | 2026-06-20
+         8 | 강민준      | 작별인사        | 2026-07-01  | 2026-07-15
+         9 | 윤서아      | 소년이 온다     | 2026-06-07  | 2026-06-21
+        10 | 임현우      | 1Q84            | 2026-06-08  | 2026-06-22
+        11 | 한소율      | 살인자의 기억법 | 2026-06-09  | 2026-06-23
+        12 | 김재현      | 채식주의자      | 2026-07-05  | 2026-07-19
+        13 | 이수민      | 창백한 푸른 점  | 2026-07-06  | 2026-07-20
+        14 | 최지우      | 클린 코드       | 2026-07-07  | 2026-07-21
+        15 | 정하은      | 사피엔스        | 2026-07-08  | 2026-07-22
+(13 rows)
+
+===== Q7 =====
+[설명] Q7. (INNER JOIN) 책 목록에 카테고리명 + 저자명 함께 조회
+[SQL]
+SELECT b.title, cat.category_name, a.author_name
+FROM book b
+INNER JOIN category cat ON b.category_id = cat.category_id
+INNER JOIN author a ON b.author_id = a.author_id
+ORDER BY cat.category_name, b.title;
+[결과]
+title        | category_name |   author_name   
+---------------------+---------------+-----------------
+ 클린 아키텍처       | IT/프로그래밍 | 로버트 마틴
+ 클린 코드           | IT/프로그래밍 | 로버트 마틴
+ 창백한 푸른 점      | 과학          | 칼 세이건
+ 코스모스            | 과학          | 칼 세이건
+ 1Q84                | 소설          | 무라카미 하루키
+ 노르웨이의 숲       | 소설          | 무라카미 하루키
+ 데미안              | 소설          | 무라카미 하루키
+ 빛의 과거           | 소설          | 한강
+ 살인자의 기억법     | 소설          | 김영하
+ 소년이 온다         | 소설          | 한강
+ 작별인사            | 소설          | 김영하
+ 채식주의자          | 소설          | 한강
+ 본헤드              | 에세이        | 베어 그릴스
+ 나의 한국현대사     | 역사          | 유시민
+ 논어                | 인문          | 공자
+ 사피엔스            | 인문          | 유발 하라리
+ 호모 데우스         | 인문          | 유발 하라리
+ 아주 작은 습관의 힘 | 자기계발      | 제임스 클리어
+(18 rows)
+
+===== Q8 =====
+[설명] Q8. (LEFT JOIN) 전체 회원과 대여 건수를 함께 조회 (대여 없는 회원도 포함)
+[SQL]
+SELECT m.member_name, r.rental_id
+FROM member m
+LEFT JOIN rental r ON m.member_id = r.member_id
+ORDER BY m.member_name;
+[결과]
+member_name | rental_id 
+-------------+-----------
+ 강민준      |         7
+ 강민준      |         8
+ 김재현      |        12
+ 김재현      |         2
+ 박도윤      |         4
+ 배유진      |          
+ 신은우      |          
+ 오태양      |          
+ 윤서아      |         9
+ 이수민      |        13
+ 임현우      |        10
+ 정하은      |         6
+ 정하은      |        15
+ 최지우      |         5
+ 최지우      |        14
+ 한소율      |        11
+(16 rows)
+
+===== Q9 =====
+[설명] Q9. (COUNT + GROUP BY) 회원별 대여 횟수 집계
+[SQL]
+SELECT m.member_name, COUNT(r.rental_id) AS rental_count
+FROM member m
+INNER JOIN rental r ON m.member_id = r.member_id
+GROUP BY m.member_name
+ORDER BY rental_count DESC;
+[결과]
+member_name | rental_count 
+-------------+--------------
+ 강민준      |            2
+ 정하은      |            2
+ 최지우      |            2
+ 김재현      |            2
+ 이수민      |            1
+ 임현우      |            1
+ 박도윤      |            1
+ 한소율      |            1
+ 윤서아      |            1
+(9 rows)
+
+===== Q10 =====
+[설명] Q10. (COUNT + GROUP BY) 카테고리별 보유 도서 수 집계
+[SQL]
+SELECT cat.category_name, COUNT(b.book_id) AS book_count
+FROM book b
+INNER JOIN category cat ON b.category_id = cat.category_id
+GROUP BY cat.category_name
+ORDER BY book_count DESC;
+[결과]
+category_name | book_count 
+---------------+------------
+ 소설          |          8
+ 인문          |          3
+ IT/프로그래밍 |          2
+ 과학          |          2
+ 자기계발      |          1
+ 에세이        |          1
+ 역사          |          1
+(7 rows)
+
+===== Q11 =====
+[설명] Q11. (COUNT + GROUP BY) 카테고리별 대여 횟수 집계 (인기 카테고리 파악)
+[SQL]
+SELECT cat.category_name, COUNT(r.rental_id) AS rental_count
+FROM rental r
+INNER JOIN book b ON r.book_id = b.book_id
+INNER JOIN category cat ON b.category_id = cat.category_id
+GROUP BY cat.category_name
+ORDER BY rental_count DESC;
+[결과]
+category_name | rental_count 
+---------------+--------------
+ 소설          |            7
+ IT/프로그래밍 |            3
+ 인문          |            2
+ 과학          |            1
+(4 rows)
+
+===== Q12 =====
+[설명] Q12. 한 번도 대여되지 않은 책 찾기 (NOT IN 서브쿼리)
+[SQL]
+SELECT title
+FROM book
+WHERE book_id NOT IN (
+    SELECT DISTINCT book_id FROM rental
+);
+[결과]
+title        
+---------------------
+ 코스모스
+ 나의 한국현대사
+ 아주 작은 습관의 힘
+ 본헤드
+ 논어
+ 빛의 과거
+ 데미안
+(7 rows)
+
+===== Q13 =====
+[설명] Q13. (UPDATE) 3번 대여 기록을 반납 완료 처리
+[SQL]
+UPDATE rental
+SET status = 'RETURNED', return_date = '2026-07-10'
+WHERE rental_id = 4;
+[결과]
+UPDATE 1
+
+===== Q14 =====
+[설명] Q14. (DELETE) 반납 완료된 대여 기록 중 2026년 6월 이전에 반납된 오래된 기록 삭제
+[SQL]
+DELETE FROM rental
+WHERE status = 'RETURNED' AND return_date < '2026-06-15';
+[결과]
+DELETE 0
+
+===== Q15 =====
+[설명] Q15. rental.member_id 인덱스 생성 이유: "회원별 대여 조회(Q5, Q9)"처럼 member_id로 rental을 찾는 조회가 매우 빈번한 FK 컬럼이므로, 인덱스를 걸어 조회 성능을 개선한다.
+[SQL]
+CREATE INDEX idx_rental_member_id ON rental(member_id);
+[결과]
+[안내] ERROR:  relation "idx_rental_member_id" already exists
