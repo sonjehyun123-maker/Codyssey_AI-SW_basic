@@ -42,7 +42,7 @@ def build_parser():
         "-mt", "--max-tokens",
         dest="max_tokens",
         type=int,
-        default=5120
+        default=4096
     )
     common.add_argument(
         "-s", "--safe-mode",
