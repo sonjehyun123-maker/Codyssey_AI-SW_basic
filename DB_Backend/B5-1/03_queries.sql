@@ -52,78 +52,58 @@ INNER JOIN category cat ON b.category_id = cat.category_id
 INNER JOIN author a ON b.author_id = a.author_id
 ORDER BY cat.category_name, b.title;
 
--- Q8. (LEFT JOIN) 전체 회원과 대여 건수 조회 (대여 없는 회원 포함)
-SELECT
-    m.member_name,
-    COUNT(r.rental_id) AS rental_count
-FROM member AS m
-LEFT JOIN rental AS r
-    ON m.member_id = r.member_id
-GROUP BY m.member_id, m.member_name
+-- Q8. (LEFT JOIN) 전체 회원과 대여 건수를 함께 조회 (대여 없는 회원도 포함)
+SELECT m.member_name, r.rental_id
+FROM member m
+LEFT JOIN rental r ON m.member_id = r.member_id
 ORDER BY m.member_name;
 
 
 -- ============ [집계 3개] ============
 
 -- Q9. (COUNT + GROUP BY) 회원별 대여 횟수 집계
-SELECT
-    m.member_name,
-    COUNT(r.rental_id) AS rental_count
-FROM member AS m
-INNER JOIN rental AS r
-    ON m.member_id = r.member_id
-GROUP BY m.member_id, m.member_name
-ORDER BY rental_count DESC, m.member_name;
+SELECT m.member_name, COUNT(r.rental_id) AS rental_count
+FROM member m
+INNER JOIN rental r ON m.member_id = r.member_id
+GROUP BY m.member_name
+ORDER BY rental_count DESC;
 
 -- Q10. (COUNT + GROUP BY) 카테고리별 보유 도서 수 집계
-SELECT
-    cat.category_name,
-    COUNT(b.book_id) AS book_count
-FROM category AS cat
-LEFT JOIN book AS b
-    ON cat.category_id = b.category_id
-GROUP BY cat.category_id, cat.category_name
-ORDER BY book_count DESC, cat.category_name;
+SELECT cat.category_name, COUNT(b.book_id) AS book_count
+FROM book b
+INNER JOIN category cat ON b.category_id = cat.category_id
+GROUP BY cat.category_name
+ORDER BY book_count DESC;
 
--- Q11. (COUNT + GROUP BY) 카테고리별 대여 횟수 집계 (인기 카테고리 파악)
-SELECT
-    cat.category_name,
-    COUNT(r.rental_id) AS rental_count
-FROM category AS cat
-LEFT JOIN book AS b
-    ON cat.category_id = b.category_id
-LEFT JOIN rental AS r
-    ON b.book_id = r.book_id
-GROUP BY cat.category_id, cat.category_name
-ORDER BY rental_count DESC, cat.category_name;
+-- Q11. (AVG + GROUP BY) 카테고리별 평균 출간연도 집계
+SELECT cat.category_name, ROUND(AVG(b.published_year), 0) AS avg_published_year
+FROM book b
+INNER JOIN category cat ON b.category_id = cat.category_id
+GROUP BY cat.category_name
+ORDER BY avg_published_year DESC;
 
 
 -- ============ [서브쿼리 1개] ============
 
 -- Q12. 한 번도 대여되지 않은 책 찾기 (NOT IN 서브쿼리)
-SELECT b.title
-FROM book AS b
-WHERE NOT EXISTS (
-    SELECT 1
-    FROM rental AS r
-    WHERE r.book_id = b.book_id
+SELECT title
+FROM book
+WHERE book_id NOT IN (
+    SELECT DISTINCT book_id FROM rental
 );
+
 
 -- ============ [데이터 수정/삭제 2개] ============
 
 -- Q13. (UPDATE) 3번 대여 기록을 반납 완료 처리
 UPDATE rental
-SET
-    status = 'RETURNED',
-    return_date = '2026-07-10'
-WHERE rental_id = 4
-  AND status = 'RENTED';
+SET status = 'RETURNED', return_date = '2026-07-10'
+WHERE rental_id = 4;
 
 -- Q14. (DELETE) 반납 완료된 대여 기록 중 2026년 6월 이전에 반납된 오래된 기록 삭제
 DELETE FROM rental
-WHERE status = 'RETURNED'
-  AND return_date IS NOT NULL
-  AND return_date < '2026-06-15';
+WHERE status = 'RETURNED' AND return_date < '2026-06-15';
+
 
 -- ============ [인덱스 1개] ============
 
