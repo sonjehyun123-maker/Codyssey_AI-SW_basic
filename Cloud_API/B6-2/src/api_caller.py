@@ -28,11 +28,23 @@ def call_gemini(prompt: str, model: str, temperature: float, max_tokens: int) ->
         raise RuntimeError(f"API 호출 실패: {e}")
 
     data = response.json()
+
     try:
-        return data["candidates"][0]["content"]["parts"][0]["text"]
-    except (KeyError, IndexError):
+        candidate = data["candidates"][0]
+    except (KeyError, IndexError, TypeError):
         raise RuntimeError(f"API 응답 형식이 예상과 다릅니다: {data}")
 
+    finish_reason = candidate.get("finishReason")
+
+    if finish_reason == "MAX_TOKENS":
+        raise RuntimeError(
+            "최대 출력 토큰 수에 도달하여 응답이 완료되지 않았습니다."
+        )
+
+    try:
+        return candidate["content"]["parts"][0]["text"]
+    except (KeyError, IndexError, TypeError):
+        raise RuntimeError(f"API 응답 형식이 예상과 다릅니다: {data}")
 
 def generate_with_retry(prompt: str, validate_fn, args) -> str | None:
     for attempt in range(1, MAX_RETRIES + 1):
