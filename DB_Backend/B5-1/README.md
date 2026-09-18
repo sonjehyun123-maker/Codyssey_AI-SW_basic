@@ -12,6 +12,9 @@
 ├── Makefile
 └── README.md</escape>
 
+## 테이블 관계도
+![관계도](/DB_Backend/B5-1/images/image.png)
+
 ## 기술 스택
 
 * PostgreSQL 16
