@@ -30,6 +30,74 @@
 
 하나의 책은 여러 작가를 가질 수 있고(공저), 하나의 작가도 여러 책을 가질 수 있기 때문에(N:M) `book_author` 브릿지 테이블로 관계를 따로 관리해야 하며, 진실이 두 군데(book.author_id와 book_author)에 있으면 갱신 이상이 다시 생긴다.
 
+## book_author 브릿지 테이블 도입 — 전/후 비교
+
+### Before — book.author_id (1:N 가정)
+
+```sql
+CREATE TABLE book (
+    book_id         INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    title           TEXT NOT NULL,
+    ...
+    author_id       INTEGER NOT NULL,
+    FOREIGN KEY (author_id) REFERENCES author(author_id)
+);
+```
+
+- "책 1권 = 저자 1명"만 표현 가능
+- 공저 도서를 넣으려면 `author_id` 컬럼에 값을 하나만 넣을 수 있어서, 나머지 저자는 저장할 곳이 없음
+
+### After — book_author 브릿지 테이블 (N:M)
+
+```sql
+-- book에서 author_id 제거
+CREATE TABLE book (
+    book_id         INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    title           TEXT NOT NULL,
+    ...
+    -- author_id 컬럼 삭제됨
+);
+
+-- 관계를 별도 테이블로 분리
+CREATE TABLE book_author (
+    book_id     INTEGER NOT NULL,
+    author_id   INTEGER NOT NULL,
+    PRIMARY KEY (book_id, author_id),
+    FOREIGN KEY (book_id) REFERENCES book(book_id),
+    FOREIGN KEY (author_id) REFERENCES author(author_id)
+);
+```
+
+- 책 1권에 저자 여러 명(공저), 저자 1명이 여러 책 — 양방향 N 모두 표현 가능
+- "관계를 표현하는 곳"이 `book_author` 한 곳으로 통일됨 (Before는 `book.author_id`가 유일한 진실이었다면, After는 `book_author`가 유일한 진실)
+
+### 검증
+
+공저 예시 도서를 넣고 실제로 조회해 확인함:
+
+```sql
+SELECT b.title, a.author_name
+FROM book b
+JOIN book_author ba ON b.book_id = ba.book_id
+JOIN author a ON ba.author_id = a.author_id
+WHERE b.book_id = 19;
+```
+
+```
+            title             | author_name
+------------------------------+-------------
+ 사피엔스 그 이후 (공저 예시) | 유발 하라리
+ 사피엔스 그 이후 (공저 예시) | 유시민
+(2 rows)
+```
+
+### 왜 바꿨나
+
+- Before 구조로는 이 공저 도서를 아예 저장할 수 없었음 (author_id는 값 하나만 허용)
+- 지금은 요구사항(최소 4테이블, 1:N 2개 이상)을 이미 충족한 상태였지만, "실제 도메인(도서관)은 N:M이 현실"이라는 점을 반영해 정규화 근거를 더 명확히 하기 위해 도입함
+
+
+
 ---
 
 ## 4. 조인 읽는 순서 (Q6 기준)
