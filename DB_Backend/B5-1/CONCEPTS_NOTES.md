@@ -1,6 +1,6 @@
 # B5-1 도서 대여 DB — 개념 학습 노트
 
-평가 피드백을 바탕으로 진행한 개념 학습 세션 정리.  
+평가 피드백을 바탕으로 진행한 개념 학습 세션 정리.
 각 항목은 내가 직접 이해하고 설명한 내용을 기준으로 작성.
 
 ---
@@ -26,14 +26,15 @@
 
 ## 3. N:M 관계 — book_author 브릿지 테이블
 
-`book.author_id`는 삭제해야 한다.
+> **주: 아래 전/후 비교는 개념 학습용 실습이며, 실제 제출된 `01_schema.sql` / `02_sample_data.sql`에는 반영하지 않음.** 제출 스키마는 book:author = 1:N으로 단순화된 상태를 그대로 유지함.
+
+`book.author_id`는 (도입한다면) 삭제해야 한다.
 
 하나의 책은 여러 작가를 가질 수 있고(공저), 하나의 작가도 여러 책을 가질 수 있기 때문에(N:M) `book_author` 브릿지 테이블로 관계를 따로 관리해야 하며, 진실이 두 군데(book.author_id와 book_author)에 있으면 갱신 이상이 다시 생긴다.
 
-## book_author 브릿지 테이블 도입 — 전/후 비교
+### book_author 브릿지 테이블 도입 — 전/후 비교 (실습용)
 
-### Before — book.author_id (1:N 가정)
-
+**Before — book.author_id (1:N 가정)**
 ```sql
 CREATE TABLE book (
     book_id         INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -43,14 +44,11 @@ CREATE TABLE book (
     FOREIGN KEY (author_id) REFERENCES author(author_id)
 );
 ```
-
 - "책 1권 = 저자 1명"만 표현 가능
-- 공저 도서를 넣으려면 `author_id` 컬럼에 값을 하나만 넣을 수 있어서, 나머지 저자는 저장할 곳이 없음
+- 공저 도서를 넣으려면 author_id 컬럼에 값을 하나만 넣을 수 있어서, 나머지 저자는 저장할 곳이 없음
 
-### After — book_author 브릿지 테이블 (N:M)
-
+**After — book_author 브릿지 테이블 (N:M)**
 ```sql
--- book에서 author_id 제거
 CREATE TABLE book (
     book_id         INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     title           TEXT NOT NULL,
@@ -58,7 +56,6 @@ CREATE TABLE book (
     -- author_id 컬럼 삭제됨
 );
 
--- 관계를 별도 테이블로 분리
 CREATE TABLE book_author (
     book_id     INTEGER NOT NULL,
     author_id   INTEGER NOT NULL,
@@ -67,14 +64,10 @@ CREATE TABLE book_author (
     FOREIGN KEY (author_id) REFERENCES author(author_id)
 );
 ```
-
 - 책 1권에 저자 여러 명(공저), 저자 1명이 여러 책 — 양방향 N 모두 표현 가능
-- "관계를 표현하는 곳"이 `book_author` 한 곳으로 통일됨 (Before는 `book.author_id`가 유일한 진실이었다면, After는 `book_author`가 유일한 진실)
+- "관계를 표현하는 곳"이 book_author 한 곳으로 통일됨
 
-### 검증
-
-공저 예시 도서를 넣고 실제로 조회해 확인함:
-
+**검증** (공저 예시 도서 삽입 후 조회)
 ```sql
 SELECT b.title, a.author_name
 FROM book b
@@ -82,7 +75,6 @@ JOIN book_author ba ON b.book_id = ba.book_id
 JOIN author a ON ba.author_id = a.author_id
 WHERE b.book_id = 19;
 ```
-
 ```
             title             | author_name
 ------------------------------+-------------
@@ -91,19 +83,13 @@ WHERE b.book_id = 19;
 (2 rows)
 ```
 
-### 왜 바꿨나
-
-- Before 구조로는 이 공저 도서를 아예 저장할 수 없었음 (author_id는 값 하나만 허용)
-- 지금은 요구사항(최소 4테이블, 1:N 2개 이상)을 이미 충족한 상태였지만, "실제 도메인(도서관)은 N:M이 현실"이라는 점을 반영해 정규화 근거를 더 명확히 하기 위해 도입함
-
-
+**조인 비용에 대한 판단**: `book_author`의 PK가 복합키(book_id, author_id)라 자동으로 인덱스가 생기므로, 조인 하나 추가돼도 인덱스 스캔으로 처리되어 체감 손해가 거의 없음. 브릿지 테이블은 "공저 한 권"을 위한 게 아니라 "앞으로 들어올 모든 공저 데이터"가 깨지지 않기 위한 정규화 근거이며, 정규화(진실은 한 곳에)와 N:M 표현(공저 가능)을 동시에 만족시키는 방법이라는 결론.
 
 ---
 
 ## 4. 조인 읽는 순서 (Q6 기준)
 
 대여 테이블에서,
-
 1. 대여의 `member_id`와 `member` 테이블의 `member_id`가 같은 것을 찾고
 2. 대여의 `book_id`와 `book` 테이블의 `book_id`가 같은 것을 찾아
 3. 최종적으로 `rental_id / member_name / title / rental_date / due_date`를 출력하고
@@ -129,13 +115,21 @@ CHECK은 DB에 데이터가 들어갈 때 걸리는 최소한의 제한이다.
 
 애플리케이션 코드와 무관하게 DB 엔진 레벨에서 최후의 방어선으로 동작함(직접 psql로 INSERT 쳐도 막히는 걸 실습으로 확인).
 
+```sql
+CHECK (due_date >= rental_date)
+```
+```
+ERROR:  new row for relation "rental" violates check constraint "rental_check"
+DETAIL:  Failing row contains (1, 1, 1, 2026-06-10, 2026-06-01).
+```
+
 ---
 
 ## 7. 트랜잭션 원자성
 
 트랜잭션 중간에 CHECK 위반 등으로 하나라도 실패하면, 이미 성공했던 이전 INSERT까지 전부 롤백된다(전부 성공 아니면 전부 실패).
 
-실습으로 3개 INSERT 중 2번째가 실패했을 때 테이블이 0행으로 비어있는 것을 확인함.
+실습으로 3개 INSERT 중 2번째가 실패했을 때, COMMIT을 쳐도 테이블이 0행으로 비어있는 것을 확인함.
 
 ---
 
@@ -148,6 +142,8 @@ CHECK은 DB에 데이터가 들어갈 때 걸리는 최소한의 제한이다.
 - **일반 VACUUM(autovacuum)**: 동시성 때문에 자동/자주 실행, line pointer만 재사용 가능 상태로 바꿈(파일 크기 안 줄어듦)
 - **VACUUM FULL**: 테이블 전체 락 걸고 재작성, 실제로 공간 반환, 비용이 커서 수동/드물게 실행
 
+DELETE는 즉시 삭제가 아니라 xmax만 찍는 것이며, line pointer도 바로 재사용되지 않음 — 다른 트랜잭션이 옛 버전을 볼 수도 있기 때문(MVCC).
+
 ---
 
 ## 9. DB 선택 기준 (관계형 vs 비관계형)
@@ -158,19 +154,50 @@ CHECK은 DB에 데이터가 들어갈 때 걸리는 최소한의 제한이다.
 
 ---
 
-## 10. 인덱싱 — 배열 vs 해시 vs 트리(B+tree)
+## 10. 인덱싱
+
+### 10-1. 배열 vs 해시 vs 트리(B+tree)
 
 DB가 배열 대신 트리 인덱스를 쓰는 이유는, 데이터가 삽입/제거/변경될 때마다 정렬된 자리를 유지하는 비용이 크기 때문이다(배열은 중간 삽입 시 뒤 원소를 다 밀어야 함).
 
 자료구조(큐/스택/트리/해시맵 등) 중에서, 수억 개의 데이터를 저장하는 DB 입장에서 조회·저장·삽입·삭제를 모두 빠르게 하기 위해 트리를 선택했고, 트리 중에서도 같은 레벨에 데이터를 최대한 많이 넣을 수 있는(레벨당 fanout이 큰) B+tree를 사용해 DB의 핵심 역할(삽입/삭제/조회/변경)을 빠르게 한다.
 
-> (+ B+tree는 삽입/삭제마다 스스로 균형을 맞춰서, 일반 BST처럼 한쪽으로 치우쳐 O(n)까지 나빠지는 걸 방지하고 항상 O(log n)을 보장한다.)
+(+ B+tree는 삽입/삭제마다 스스로 균형을 맞춰서, 일반 BST처럼 한쪽으로 치우쳐 O(n)까지 나빠지는 걸 방지하고 항상 O(log n)을 보장한다.)
+
+### 10-2. 배열/해시 인덱싱, 좀 더 구체적으로
+
+- **배열**: `a[5]`는 `시작주소 + (5 × 타입크기)`라는 주소 계산식으로 바뀔 뿐, 비교 연산이 0번 — 진짜 O(1)
+- **해시**: `hash(key) % 버킷수`로 버킷을 찾음. 충돌 처리는 체이닝(같은 버킷에 연결리스트) 또는 오픈 어드레싱(옆 칸을 찾아 채움) 두 방식. 해시 함수를 거치는 순간 순서 정보가 사라져서 범위 검색(`BETWEEN` 등)이 원천적으로 불가능함
+
+### 10-3. PostgreSQL이 제공하는 인덱스 타입
+
+| 인덱스 타입 | 내부 구조 | 언제 씀 |
+|---|---|---|
+| B-tree (기본값) | 균형 트리 | 등호, 범위, 정렬 — 거의 대부분 |
+| Hash | 해시테이블 | 딱 `=`만 필요할 때 |
+| GIN | 역색인 | 배열, JSONB, 전문검색 (한 칸에 여러 값) |
+| BRIN | 블록 범위 요약 | 시간순으로 쌓이는 로그성 대용량 테이블 |
+
+### 10-4. 카디널리티와 선택도(Selectivity)
+
+값의 종류가 적은 컬럼(예: `status` — RENTED/RETURNED 두세 개뿐)은 인덱스 타입(B-tree든 Hash든)과 무관하게 효율이 낮음. 그 값으로 걸러지는 행이 전체의 큰 비율(선택도 낮음)을 차지하면, 인덱스로 흩어진 위치를 랜덤 I/O로 점프하는 것보다 그냥 순서대로 다 읽는 게(Seq Scan) 더 빠를 수 있음 — PostgreSQL 옵티마이저가 알아서 그렇게 판단함. 정말 필요하면 부분 인덱스(`CREATE INDEX ... WHERE status = 'OVERDUE'`)로 희귀한 값만 골라 인덱싱하는 방법이 있음.
+
+### 10-5. 인덱스 "생성"과 "사용"은 주체가 다름
+
+- **생성**: 어떤 자료구조(B-tree/Hash/GIN/BRIN)로 인덱스를 만들지는 개발자가 `CREATE INDEX ... USING xxx`로 직접 결정
+- **사용**: 만들어진 인덱스 중 이번 쿼리에 뭘 쓸지, 아예 안 쓸지는 PostgreSQL이 통계(ANALYZE) 기반으로 매번 자동 판단 — MySQL/Oracle과 달리 강제 힌트 문법이 기본으로 없음
+- **연산자 클래스(Operator class)**: 인덱스가 어떤 연산자를 가속할지 지정하는 것. 예: `LIKE 'abc%'`를 가속하려면 `text_pattern_ops`를 따로 지정해야 함
+
+### 10-6. 인덱스 선정 근거 — rental.member_id
+
+- **조회 빈도**: Q5, Q9처럼 "특정 회원의 대여 내역"을 찾는 쿼리가 가장 자주 실행될 걸로 예상
+- **카디널리티**: member_id는 값의 종류가 많아서(회원 수만큼) 인덱스 효율이 좋음. 반대로 status처럼 값 종류가 적은 컬럼은 인덱스 효과가 작음 (10-4 참고)
 
 ---
 
 # 남은 학습 항목
 
-- [ ] 인덱싱을 컴퓨터과학 전반(직접 주소 계산 / 해시 / 비교 기반)으로 넓혀서 정리 — 진행 중
+- [x] 인덱싱을 컴퓨터과학 전반(직접 주소 계산 / 해시 / 비교 기반)으로 넓혀서 정리
 - [ ] 주석 없이 조인/서브쿼리 쿼리를 바로 읽는 실전 연습 — 계속 필요
 
 ---
@@ -188,47 +215,27 @@ DB가 배열 대신 트리 인덱스를 쓰는 이유는, 데이터가 삽입/�
 
 **핵심:** 엑셀은 "데이터를 보여주는 표"고, DB는 "데이터 간 관계와 규칙을 강제하는 시스템"이다.
 
----
-
 ## 2. PK와 FK의 역할
 
 - **PK (Primary Key)** — 그 행의 "신원증명". 테이블 안에서 유일해야 하고 절대 중복/NULL 불가.
-  - 예: `book.book_id` — 세상에 같은 제목의 책이 여러 권 있어도, `book_id`는 무조건 하나만 존재
-
 - **FK (Foreign Key)** — 다른 테이블의 PK를 "참조"하는 값. 그 값이 실제로 존재하는지 DB가 검증해줌.
-  - 예: `rental.book_id`는 `book.book_id`를 참조 → 존재하지 않는 `book_id`로 대여 기록을 넣으려 하면 DB가 거부함
 
 즉 **PK = "나는 누구다"**, **FK = "나는 저것과 연결되어 있다"**.
 
----
-
 ## 3. 테이블을 왜 나눴는가
 
-만약 `rental` 테이블 하나에 회원명, 책 제목, 카테고리명, 저자명을 다 때려박았다면:
-
-- 같은 책이 100번 대여되면 책 제목·카테고리·저자 정보가 100번 중복 저장됨
-- 책 제목에 오타가 있어서 고치려면 100개 행을 다 고쳐야 함 (수정 이상)
-- 이래서 "책 정보는 `book`에 한 번만, `rental`은 `book_id`만 참조"하도록 분리함
-
-**분리 기준:** "이 정보가 독립적으로 존재할 수 있는가?" → 책은 대여 기록이 없어도 존재할 수 있으니 별도 테이블.
-
----
+만약 `rental` 테이블 하나에 회원명, 책 제목, 카테고리명, 저자명을 다 때려박았다면, 같은 책이 100번 대여될 때마다 정보가 100번 중복 저장되고, 오타 하나 고치려면 100개 행을 다 고쳐야 한다(수정 이상). "독립적으로 존재할 수 있는 정보"는 별도 테이블로 분리한다.
 
 ## 4. 컬럼 타입 선정 이유
 
-- `TEXT` vs `VARCHAR(n)` — PostgreSQL에서는 둘의 성능 차이가 없어서 길이 제한이 꼭 필요한 게 아니면 `TEXT`를 씀 (다른 DB, 예: MySQL은 다를 수 있음)
-- `DATE` vs `TIMESTAMP` — 대여일/반납일은 "몇 시 몇 분"까지 필요 없고 "그 날짜"만 중요해서 `DATE`로 충분
-- `BOOLEAN` (`is_available`) — 상태값이 참/거짓 두 가지뿐이라 `INTEGER`(1/0)보다 의미가 명확한 `BOOLEAN` 선택
-
----
+- `TEXT` vs `VARCHAR(n)` — PostgreSQL은 성능 차이 없어서 `TEXT` 사용
+- `DATE` vs `TIMESTAMP` — 시각 불필요해서 `DATE`로 충분
+- `BOOLEAN` — 참/거짓 값의 의미를 명확히
 
 ## 5. INNER JOIN vs LEFT JOIN
 
-- **INNER JOIN**: 양쪽 테이블에 **둘 다 일치하는 행만** 반환. 한쪽에 없으면 그 행 자체가 결과에서 빠짐
-- **LEFT JOIN**: 왼쪽 테이블 행은 **무조건 다 남기고**, 오른쪽에 일치하는 게 없으면 NULL로 채움
-  - `Q8`이 LEFT JOIN인 이유: "대여 이력이 하나도 없는 회원"도 결과에 보여야 하니까 (INNER JOIN이었다면 그 회원은 아예 결과에서 사라짐)
-
----
+- **INNER JOIN**: 양쪽에 일치하는 행만 반환
+- **LEFT JOIN**: 왼쪽은 무조건 다 남기고, 오른쪽에 없으면 NULL — Q8이 LEFT JOIN인 이유는 "대여 이력 없는 회원"도 보여야 하기 때문
 
 ## 6. 복잡 쿼리 단계별 분해 예시
 
@@ -238,14 +245,11 @@ WHERE book_id NOT IN (
     SELECT DISTINCT book_id FROM rental
 );
 ```
-1) 안쪽부터 실행: SELECT DISTINCT book_id FROM rental → 대여된 적 있는 book_id 목록을 먼저 뽑음
-2) 바깥쪽 실행: book 테이블에서, 1번 목록에 없는 book_id만 골라냄
+1) 안쪽부터 실행 → 대여된 적 있는 book_id 목록
+2) 바깥쪽 실행 → 그 목록에 없는 book_id만 골라냄
 3) 즉 "대여 기록에 한 번도 등장하지 않은 책"을 찾는 것
----
 
-## 7. 인덱스 선정 근거
+## 7. 인덱스 선정 근거 (rental.member_id)
 
-* rental.member_id에 인덱스를 건 이유:
-
-    - 조회 빈도: Q5, Q9처럼 "특정 회원의 대여 내역"을 찾는 쿼리가 가장 자주 실행될 걸로 예상
-    - 카디널리티: member_id는 값의 종류가 많아서(회원 수만큼) 인덱스 효율이 좋음. 반대로 status(RENTED/RETURNED 두세 개뿐)처럼 값 종류가 적은 컬럼은 인덱스 효과가 작음 
+- 조회 빈도: Q5, Q9처럼 특정 회원의 대여 내역을 찾는 쿼리가 자주 실행될 것으로 예상
+- 카디널리티: member_id는 값 종류가 많아 인덱스 효율이 좋음 (10-4 참고)
