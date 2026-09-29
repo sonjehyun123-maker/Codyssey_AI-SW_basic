@@ -42,15 +42,14 @@ CREATE TABLE member (
 -- 4. book : 도서 (category : book = 1:N, author : book = 1:N)
 -- --------------------------------------------
 CREATE TABLE book (
-    book_id         INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id              INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     title           TEXT NOT NULL,
     isbn            TEXT NOT NULL UNIQUE,
     published_year  INTEGER,
     category_id     INTEGER NOT NULL,
     author_id       INTEGER NOT NULL,
     is_available    BOOLEAN NOT NULL DEFAULT TRUE,
-    FOREIGN KEY (category_id) REFERENCES category(category_id),
-    FOREIGN KEY (author_id) REFERENCES author(author_id)
+    FOREIGN KEY (category_id) REFERENCES category(category_id)
 );
 
 -- --------------------------------------------
@@ -65,5 +64,15 @@ CREATE TABLE rental (
     return_date     DATE,
     status          TEXT NOT NULL DEFAULT 'RENTED',  -- RENTED / RETURNED / OVERDUE
     FOREIGN KEY (member_id) REFERENCES member(member_id),
-    FOREIGN KEY (book_id) REFERENCES book(book_id)
+    FOREIGN KEY (book_id) REFERENCES book(id),
+    UNIQUE (book_id, member_id)
+);
+
+
+CREATE TABLE a (
+    author_id   INTEGER NOT NULL,
+    book_id     INTEGER NOT NULL,
+    FOREIGN KEY (author_id) REFERENCES author(author_id),
+    FOREIGN KEY (book_id) REFERENCES book(id),
+    UNIQUE (author_id, book_id)
 );

@@ -6,7 +6,7 @@
 
 ### 프로젝트 구조
 
-```
+```text
 B5-1/
 ├── 01_schema.sql
 ├── 02_sample_data.sql
@@ -18,7 +18,7 @@ B5-1/
 
 ### 테이블 관계도
 
-![관계도](/DB_Backend/B5-1/images/image.png)
+![관계도](./images/image.png)
 
 ### 테이블 구조
 
