@@ -215,30 +215,61 @@ class BudgetService:
                 })
         return len(rows)
 
-    def import_csv(self, in_path: str) -> "tuple[int, int]":
+    def import_csv(self, in_path: str, on_error: str = "skip") -> "tuple[int, int, List[str]]":
         imported = skipped = 0
+        errors: List[str] = []
         next_num = int(self.tx_repo.next_id().split("-")[1])
+        new_transactions: List[Transaction] = []
+
         with open(in_path, "r", encoding="utf-8", newline="") as f:
             reader = csv.DictReader(f)
-            for row in reader:
+            # 1. 헤더 유효성 검증
+            required_fields = ["date", "type", "category", "amount"]
+            if reader.fieldnames is None:
+                raise AppError("CSV 파일이 비어 있거나 올바르지 않습니다.", "헤더가 포함된 CSV 파일을 지정해 주세요.")
+            missing_fields = [field for field in required_fields if field not in reader.fieldnames]
+            if missing_fields:
+                raise AppError(
+                    f"CSV 헤더에 필수 필드가 누락되었습니다: {', '.join(missing_fields)}",
+                    f"필수 헤더: {', '.join(required_fields)} (선택: memo, tags)",
+                )
+
+            for line_no, row in enumerate(reader, start=2):  # line 1 is header
                 try:
-                    date = row["date"].strip()
-                    type_ = row["type"].strip()
-                    category = row["category"].strip()
+                    date = (row.get("date") or "").strip()
+                    type_ = (row.get("type") or "").strip()
+                    category = (row.get("category") or "").strip()
+                    amount_raw = (row.get("amount") or "").strip()
+
                     validate_date(date)
                     validate_type(type_)
-                    amount = validate_amount(row["amount"])
+                    amount = validate_amount(amount_raw)
                     self._require_category(category)
+
                     memo = (row.get("memo") or "").strip()
                     tags_raw = (row.get("tags") or "").strip()
-                    tags = [t for t in tags_raw.split(",") if t] if tags_raw else []
+                    tags = [t.strip() for t in tags_raw.split(",") if t.strip()] if tags_raw else []
+
                     tx = Transaction(
                         id=f"TX-{next_num:06d}", type=type_, date=date,
                         amount=amount, category=category, memo=memo, tags=tags,
                     )
-                    self.tx_repo.append(tx)
+                    new_transactions.append(tx)
                     next_num += 1
                     imported += 1
-                except (AppError, KeyError, ValueError):
+                except Exception as e:
                     skipped += 1
-        return imported, skipped
+                    msg = f"Line {line_no}: {e} (내용: {dict(row)})"
+                    errors.append(msg)
+                    if on_error == "fail-fast":
+                        raise AppError(
+                            f"CSV 가져오기 실패 (중단 정책: fail-fast) - {msg}",
+                            "데이터를 수정한 후 다시 시도하거나 --on-error skip 옵션을 사용하세요.",
+                        )
+
+        # fail-fast가 아니고 통과했거나 skip 모드인 경우 저장 반영
+        for tx in new_transactions:
+            self.tx_repo.append(tx)
+
+        return imported, skipped, errors
+

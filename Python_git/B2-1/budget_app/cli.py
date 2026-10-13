@@ -69,6 +69,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_import = sub.add_parser("import", help="CSV에서 가져오기")
     p_import.add_argument("--from", dest="in_path", required=True)
+    p_import.add_argument("--on-error", choices=["skip", "fail-fast"], default="skip", help="오류 발생 시 처리 정책 (기본값: skip)")
 
     return parser
 
@@ -176,8 +177,13 @@ def cmd_export(service: BudgetService, args: argparse.Namespace) -> None:
 
 @handle_errors
 def cmd_import(service: BudgetService, args: argparse.Namespace) -> None:
-    imported, skipped = service.import_csv(args.in_path)
+    imported, skipped, errors = service.import_csv(args.in_path, on_error=args.on_error)
     print(f"[완료] imported={imported}, skipped={skipped}")
+    if errors:
+        print("[건너뛴 행 상세 리포트]")
+        for err in errors:
+            print(f" - {err}")
+
 
 
 def main(argv: List[str] = None) -> None:

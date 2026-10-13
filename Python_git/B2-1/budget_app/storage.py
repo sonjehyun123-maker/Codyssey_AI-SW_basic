@@ -30,10 +30,24 @@ class TransactionRepository:
 
     def rewrite_all(self, transactions: List[Transaction]) -> None:
         tmp_path = self.path + ".tmp"
-        with open(tmp_path, "w", encoding="utf-8") as f:
-            for tx in transactions:
-                f.write(json.dumps(tx.to_dict(), ensure_ascii=False) + "\n")
-        os.replace(tmp_path, self.path)
+        bak_path = self.path + ".bak"
+        try:
+            with open(tmp_path, "w", encoding="utf-8") as f:
+                for tx in transactions:
+                    f.write(json.dumps(tx.to_dict(), ensure_ascii=False) + "\n")
+            # 백업 생성 후 원자적 교체
+            if os.path.exists(self.path):
+                import shutil
+                shutil.copy2(self.path, bak_path)
+            os.replace(tmp_path, self.path)
+            if os.path.exists(bak_path):
+                os.remove(bak_path)
+        except Exception:
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+            if os.path.exists(bak_path) and not os.path.exists(self.path):
+                os.replace(bak_path, self.path)
+            raise
 
 
 class CategoryStore:
@@ -53,10 +67,23 @@ class CategoryStore:
     def remove(self, name: str) -> None:
         remaining = [c for c in self.list_all() if c != name]
         tmp_path = self.path + ".tmp"
-        with open(tmp_path, "w", encoding="utf-8") as f:
-            for c in remaining:
-                f.write(json.dumps({"name": c}, ensure_ascii=False) + "\n")
-        os.replace(tmp_path, self.path)
+        bak_path = self.path + ".bak"
+        try:
+            with open(tmp_path, "w", encoding="utf-8") as f:
+                for c in remaining:
+                    f.write(json.dumps({"name": c}, ensure_ascii=False) + "\n")
+            if os.path.exists(self.path):
+                import shutil
+                shutil.copy2(self.path, bak_path)
+            os.replace(tmp_path, self.path)
+            if os.path.exists(bak_path):
+                os.remove(bak_path)
+        except Exception:
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+            if os.path.exists(bak_path) and not os.path.exists(self.path):
+                os.replace(bak_path, self.path)
+            raise
 
 
 class BudgetStore:
@@ -78,10 +105,24 @@ class BudgetStore:
         budgets = self.get_all()
         budgets[month] = amount
         tmp_path = self.path + ".tmp"
-        with open(tmp_path, "w", encoding="utf-8") as f:
-            for m, a in budgets.items():
-                f.write(json.dumps({"month": m, "amount": a}, ensure_ascii=False) + "\n")
-        os.replace(tmp_path, self.path)
+        bak_path = self.path + ".bak"
+        try:
+            with open(tmp_path, "w", encoding="utf-8") as f:
+                for m, a in budgets.items():
+                    f.write(json.dumps({"month": m, "amount": a}, ensure_ascii=False) + "\n")
+            if os.path.exists(self.path):
+                import shutil
+                shutil.copy2(self.path, bak_path)
+            os.replace(tmp_path, self.path)
+            if os.path.exists(bak_path):
+                os.remove(bak_path)
+        except Exception:
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+            if os.path.exists(bak_path) and not os.path.exists(self.path):
+                os.replace(bak_path, self.path)
+            raise
 
     def get(self, month: str) -> Optional[int]:
         return self.get_all().get(month)
+

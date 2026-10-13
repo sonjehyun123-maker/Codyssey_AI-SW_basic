@@ -49,15 +49,27 @@ all:
 		echo "$$ delete --id TX-000003"; \
 		$(PYTHON) -m budget_app --data-dir $(SCENARIO_DIR) delete --id TX-000003; \
 		echo; \
+		echo "category remove(사용 중인 카테고리 대체 삭제):"; \
+		echo "$$ category remove --name food --replace-with etc"; \
+		$(PYTHON) -m budget_app --data-dir $(SCENARIO_DIR) category remove --name food --replace-with etc; \
+		echo "$$ list --limit 2 (food가 etc로 변경되었는지 확인)"; \
+		$(PYTHON) -m budget_app --data-dir $(SCENARIO_DIR) list --limit 2; \
+		echo; \
 		echo "export/import(내보내기/가져오기):"; \
 		echo "$$ export --out export.csv --month 2024-01"; \
 		$(PYTHON) -m budget_app --data-dir $(SCENARIO_DIR) export --out export.csv --month 2024-01; \
 		echo "$$ import --from export.csv"; \
 		$(PYTHON) -m budget_app --data-dir $(SCENARIO_DIR) import --from export.csv; \
 		echo; \
+		echo "import 오류 검증 및 리포트 테스트:"; \
+		printf "date,type,category,amount\n2024-99-99,invalid,unknown,-100\n" > import_bad.csv; \
+		echo "$$ import --from import_bad.csv --on-error skip"; \
+		$(PYTHON) -m budget_app --data-dir $(SCENARIO_DIR) import --from import_bad.csv --on-error skip; \
+		rm -f import_bad.csv; \
+		echo; \
 		echo "오류 출력 예시:"; \
 		echo "$$ add (잘못된 날짜)"; \
-		printf "2024-13-40\nexpense\nfood\n15000\n\n\n" | $(PYTHON) -m budget_app --data-dir $(SCENARIO_DIR) add; \
+		printf "2024-13-40\nexpense\netc\n15000\n\n\n" | $(PYTHON) -m budget_app --data-dir $(SCENARIO_DIR) add; \
 		echo; \
 		rm -rf $(SCENARIO_DIR) export.csv; \
 		echo "[전체 시나리오 완료]"; \
